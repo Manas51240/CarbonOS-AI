@@ -1,7 +1,18 @@
 /**
- * CarbonOS AI - Calculations Test Suite & Runner
- * Validates carbon formula conversions against EPA/IPCC standards.
+ * CarbonOS AI - Calculations & State Transition Test Suite
+ * Validates carbon formula conversions and simulated database state transitions.
  */
+
+// Mock global localStorage for Node.js E2E-style service testing
+if (typeof global.window === 'undefined') {
+  const mockStorage: Record<string, string> = {};
+  (global as any).window = {};
+  (global as any).localStorage = {
+    getItem: (key: string) => mockStorage[key] || null,
+    setItem: (key: string, value: string) => { mockStorage[key] = String(value); },
+    removeItem: (key: string) => { delete mockStorage[key]; }
+  };
+}
 
 import {
   calculateTransportEmissions,
@@ -12,17 +23,28 @@ import {
   calculateSustainabilityScore,
 } from './carbonCalculations';
 
-function assertEqual(actual: number, expected: number, tolerance = 0.01, testName: string) {
-  const diff = Math.abs(actual - expected);
-  if (diff <= tolerance) {
-    console.log(`[PASS] ${testName} (Expected: ${expected.toFixed(3)}, Actual: ${actual.toFixed(3)})`);
+import { FirebaseService } from '../services/firebase';
+
+function assertEqual(actual: any, expected: any, tolerance = 0.01, testName: string) {
+  if (typeof actual === 'number' && typeof expected === 'number') {
+    const diff = Math.abs(actual - expected);
+    if (diff <= tolerance) {
+      console.log(`[PASS] ${testName} (Expected: ${expected.toFixed(3)}, Actual: ${actual.toFixed(3)})`);
+    } else {
+      console.error(`[FAIL] ${testName} (Expected: ${expected.toFixed(3)}, Actual: ${actual.toFixed(3)})`);
+      throw new Error(`Assertion failed for: ${testName}`);
+    }
   } else {
-    console.error(`[FAIL] ${testName} (Expected: ${expected.toFixed(3)}, Actual: ${actual.toFixed(3)})`);
-    throw new Error(`Assertion failed for: ${testName}`);
+    if (actual === expected) {
+      console.log(`[PASS] ${testName} (Expected: ${expected}, Actual: ${actual})`);
+    } else {
+      console.error(`[FAIL] ${testName} (Expected: ${expected}, Actual: ${actual})`);
+      throw new Error(`Assertion failed for: ${testName}`);
+    }
   }
 }
 
-export function runTests() {
+export async function runTests() {
   console.log('=== STARTING CARBONOS FORMULA TESTS ===\n');
 
   try {
@@ -122,9 +144,87 @@ export function runTests() {
       'Sustainability score 0 limit'
     );
 
+    console.log('\n=== STARTING STATE TRANSITION TESTS ===\n');
+
+    // 7. Auth SignUp Flow Test
+    const userProfile = await FirebaseService.auth.signUp('test@carbonos.ai', 'Test User');
+    assertEqual(userProfile.email, 'test@carbonos.ai', 0, 'Auth SignUp Profile Email matches');
+    assertEqual(userProfile.displayName, 'Test User', 0, 'Auth SignUp Profile Name matches');
+    assertEqual(userProfile.greenPoints, 200, 0, 'Auth SignUp Starting Points matching');
+
+    // 8. Carbon Log addition & Score Recalculation Test
+    await FirebaseService.db.addFootprintLog({
+      date: '2026-06-14',
+      transport: 2.5,
+      energy: 3.1,
+      food: 1.5,
+      digital: 0.1,
+      waste: 0.5,
+      total: 7.7
+    });
+
+    const activeProfile = await FirebaseService.auth.getCurrentUser();
+    assertEqual(
+      activeProfile?.sustainabilityScore,
+      100,
+      0,
+      'Adding low-carbon footprint log yields optimal sustainability rating (100)'
+    );
+
+    // 9. Challenge Joining & Progress Completion Test
+    const challenges = await FirebaseService.db.getChallenges();
+    const targetChallenge = challenges[0];
+    assertEqual(targetChallenge.joined, false, 0, 'Challenge initial state: unjoined');
+
+    const joinedList = await FirebaseService.db.joinChallenge(targetChallenge.id);
+    assertEqual(joinedList[0].joined, true, 0, 'Challenge state after joining: joined');
+
+    const progressResult = await FirebaseService.db.updateChallengeProgress(targetChallenge.id, 100);
+    assertEqual(progressResult.completed, true, 0, 'Challenge status after hitting 100% progress: complete');
+    
+    const postChallengeProfile = await FirebaseService.auth.getCurrentUser();
+    assertEqual(
+      postChallengeProfile?.greenPoints,
+      200 + targetChallenge.pointsReward + 15, // sign up + challenge + 1 log (15pts)
+      0,
+      'Completing challenge distributes points reward successfully'
+    );
+
+    // 10. Reward Store Credit Validation & Redemptions
+    const rewards = await FirebaseService.db.getRewards();
+    const costlyReward = rewards.find(r => r.costPoints > 400); // e.g. Amazon donation
+    
+    if (costlyReward) {
+      // Temporarily set user points low to assert credit blocking
+      const currentProfile = await FirebaseService.auth.getCurrentUser();
+      if (currentProfile) {
+        currentProfile.greenPoints = 50; // insufficient
+        localStorage.setItem('carbonos_user_profile', JSON.stringify(currentProfile));
+      }
+
+      const failRes = await FirebaseService.db.redeemReward(costlyReward.id);
+      assertEqual(failRes.success, false, 0, 'Purchase is blocked if points balance is below cost');
+
+      // Set user points high to assert success
+      const updatedProfile = await FirebaseService.auth.getCurrentUser();
+      if (updatedProfile) {
+        updatedProfile.greenPoints = 1200; // sufficient
+        localStorage.setItem('carbonos_user_profile', JSON.stringify(updatedProfile));
+      }
+
+      const successRes = await FirebaseService.db.redeemReward(costlyReward.id);
+      assertEqual(successRes.success, true, 0, 'Purchase is approved if points balance exceeds cost');
+      assertEqual(
+        successRes.profile?.greenPoints,
+        1200 - costlyReward.costPoints,
+        0,
+        'Points are deducted correctly after successful redemption'
+      );
+    }
+
     console.log('\n✅ ALL TEST ASSERTIONS COMPLETED SUCCESSFULLY.');
   } catch (err) {
-    console.error('\n❌ TEST RUN ENCOUNTERED A FAILURE AS DETAILED ABOVE.');
+    console.error('\n❌ TEST RUN ENCOUNTERED A FAILURE AS DETAILED ABOVE.', err);
     process.exit(1);
   }
 }
