@@ -213,8 +213,9 @@ export default function CarbonTwinPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Diet Type */}
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold text-muted-foreground">Diet Selection</label>
+                <label htmlFor="diet-select" className="text-xs font-bold text-muted-foreground">Diet Selection</label>
                 <select
+                  id="diet-select"
                   value={diet}
                   onChange={(e) => setDiet(e.target.value as any)}
                   className="w-full px-3.5 py-3 rounded-xl bg-secondary/40 border border-muted focus:border-primary text-sm font-semibold outline-none transition-all duration-300"
@@ -229,10 +230,11 @@ export default function CarbonTwinPage() {
               {/* Commute Distance slider */}
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs font-bold text-muted-foreground">Daily Commute Distance</label>
+                  <label htmlFor="commute-range" className="text-xs font-bold text-muted-foreground">Daily Commute Distance</label>
                   <span className="text-xs font-bold text-primary">{commuteDist} miles</span>
                 </div>
                 <input
+                  id="commute-range"
                   type="range"
                   min="0"
                   max="100"
@@ -244,8 +246,9 @@ export default function CarbonTwinPage() {
 
               {/* Vehicle Fuel Type */}
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold text-muted-foreground">Vehicle Engine Type</label>
+                <label htmlFor="transport-select" className="text-xs font-bold text-muted-foreground">Vehicle Engine Type</label>
                 <select
+                  id="transport-select"
                   value={transportMode}
                   onChange={(e) => setTransportMode(e.target.value as any)}
                   className="w-full px-3.5 py-3 rounded-xl bg-secondary/40 border border-muted focus:border-primary text-sm font-semibold outline-none transition-all duration-300"
@@ -259,8 +262,9 @@ export default function CarbonTwinPage() {
 
               {/* Energy Source */}
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold text-muted-foreground">Home Electricity Grid Source</label>
+                <label htmlFor="energy-select" className="text-xs font-bold text-muted-foreground">Home Electricity Grid Source</label>
                 <select
+                  id="energy-select"
                   value={energySource}
                   onChange={(e) => setEnergySource(e.target.value as any)}
                   className="w-full px-3.5 py-3 rounded-xl bg-secondary/40 border border-muted focus:border-primary text-sm font-semibold outline-none transition-all duration-300"
@@ -273,8 +277,9 @@ export default function CarbonTwinPage() {
 
               {/* Digital level */}
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold text-muted-foreground">Digital Usage Pattern</label>
+                <label htmlFor="digital-select" className="text-xs font-bold text-muted-foreground">Digital Usage Pattern</label>
                 <select
+                  id="digital-select"
                   value={digitalLevel}
                   onChange={(e) => setDigitalLevel(e.target.value as any)}
                   className="w-full px-3.5 py-3 rounded-xl bg-secondary/40 border border-muted focus:border-primary text-sm font-semibold outline-none transition-all duration-300"

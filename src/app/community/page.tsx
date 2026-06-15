@@ -9,7 +9,7 @@
 import { useState } from 'react';
 import { useCarbonStore } from '@/hooks/useCarbonStore';
 import { useAuth } from '@/hooks/useAuth';
-import { Trophy, CheckCircle, Target, Sparkles, Award, ArrowUp, RefreshCw, Zap } from 'lucide-react';
+import { Trophy, CheckCircle, Target, Award, ArrowUp, RefreshCw, Zap } from 'lucide-react';
 
 export default function CommunityPage() {
   const { user } = useAuth();

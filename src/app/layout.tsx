@@ -7,7 +7,12 @@ export const metadata: Metadata = {
   description: 'Track, simulate, and optimize your carbon footprint using AI Carbon Twins, context-aware coaching, and receipt scanner insights.',
   keywords: ['sustainability', 'carbon footprint', 'AI carbon twin', 'climate action', 'carbon rewards'],
   authors: [{ name: 'CarbonOS team' }],
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({

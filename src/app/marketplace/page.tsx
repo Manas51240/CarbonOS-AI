@@ -9,7 +9,7 @@
 import { useState } from 'react';
 import { useCarbonStore } from '@/hooks/useCarbonStore';
 import { useAuth } from '@/hooks/useAuth';
-import { ShoppingBag, Sparkles, Check, Heart, RefreshCw, AlertTriangle } from 'lucide-react';
+import { ShoppingBag, Check, RefreshCw, AlertTriangle } from 'lucide-react';
 
 export default function MarketplacePage() {
   const { user } = useAuth();
@@ -29,7 +29,7 @@ export default function MarketplacePage() {
       } else {
         setMessage({ type: 'error', text: res.message });
       }
-    } catch (e) {
+    } catch {
       setMessage({ type: 'error', text: 'An unexpected error occurred during redemption' });
     } finally {
       setRedeemingId(null);

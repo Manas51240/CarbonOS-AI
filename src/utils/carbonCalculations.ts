@@ -144,7 +144,7 @@ export function calculateEnergyEmissions(input: EnergyInput): number {
 export function calculateFoodEmissions(input: FoodInput): number {
   const { dietType, servingsRedMeat, localFoodPercentage } = input;
   
-  let baseEmissions = EMISSION_FACTORS.food[dietType] ?? EMISSION_FACTORS.food.flexitarian;
+  const baseEmissions = EMISSION_FACTORS.food[dietType] ?? EMISSION_FACTORS.food.flexitarian;
   const meatEmissions = Math.max(0, servingsRedMeat) * EMISSION_FACTORS.food.redMeatServing;
   
   // Local food reduction: up to 10% offset on base diet emissions

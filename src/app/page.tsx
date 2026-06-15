@@ -11,7 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCarbonStore } from '@/hooks/useCarbonStore';
 import ScoreTracker from '@/components/ui/ScoreTracker';
 import { EmissionsTrendChart, EmissionsDistributionChart } from '@/components/ui/InteractiveChart';
-import { calculateTotalDailyFootprint, FoodInput } from '@/utils/carbonCalculations';
+import { calculateTotalDailyFootprint } from '@/utils/carbonCalculations';
 import { 
   Sparkles, 
   Calendar, 
@@ -78,9 +78,6 @@ export default function DashboardPage() {
   // Calculate stats
   const todayStr = new Date().toISOString().split('T')[0];
   const todayLog = logs.find(l => l.date === todayStr) || logs[logs.length - 1];
-
-  const totalLogsCount = logs.length;
-  const avgWeeklyFootprint = logs.reduce((sum, l) => sum + l.total, 0) / Math.max(1, totalLogsCount);
 
   return (
     <div className="flex flex-col gap-8 fade-in-view">
@@ -188,11 +185,12 @@ export default function DashboardPage() {
             
             <form onSubmit={handleLogActivity} className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
+                <label htmlFor="quick-commute-input" className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
                   <Car className="w-3.5 h-3.5 text-primary" />
                   <span>Commute (Car Miles)</span>
                 </label>
                 <input
+                  id="quick-commute-input"
                   type="number"
                   placeholder="e.g. 15"
                   value={carMiles}
@@ -202,11 +200,12 @@ export default function DashboardPage() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
+                <label htmlFor="quick-power-input" className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
                   <Flame className="w-3.5 h-3.5 text-orange-500" />
                   <span>Home Power (Grid kWh)</span>
                 </label>
                 <input
+                  id="quick-power-input"
                   type="number"
                   placeholder="e.g. 12"
                   value={electricity}
@@ -216,11 +215,12 @@ export default function DashboardPage() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
+                <label htmlFor="quick-diet-select" className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
                   <Utensils className="w-3.5 h-3.5 text-red-500" />
                   <span>Primary Diet Choice</span>
                 </label>
                 <select
+                  id="quick-diet-select"
                   value={diet}
                   onChange={(e) => setDiet(e.target.value as any)}
                   className="w-full px-3.5 py-2.5 rounded-xl bg-secondary/40 border border-muted focus:border-primary focus:ring-1 focus:ring-primary text-sm font-semibold outline-none transition-all duration-300"

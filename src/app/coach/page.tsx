@@ -9,7 +9,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { askAiCoach, ChatMessage } from '@/services/gemini';
-import { Bot, Send, Sparkles, Loader2, BookOpen, Trash2, ArrowRight } from 'lucide-react';
+import { Bot, Send, Loader2, BookOpen, Trash2, ArrowRight } from 'lucide-react';
 
 export default function CoachPage() {
   const { user } = useAuth();
@@ -63,7 +63,7 @@ How can I help you today? You can ask me to outline a personalized reduction pla
         content: reply,
         timestamp: coachTime
       }]);
-    } catch (e) {
+    } catch {
       setMessages(prev => [...prev, {
         role: 'model',
         content: 'I apologize, I encountered a communication error with the Vertex AI service. Please verify your connection or try again.',
@@ -204,6 +204,7 @@ How can I help you today? You can ask me to outline a personalized reduction pla
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               disabled={isSending}
+              aria-label="Ask sustainability coach a question"
               className="flex-1 px-4 py-3 text-xs rounded-xl bg-background border border-muted focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all duration-300 font-semibold"
             />
             <button

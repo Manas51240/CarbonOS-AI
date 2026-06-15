@@ -58,9 +58,9 @@ export default function ReceiptsPage() {
       // Aggregate categories
       let food = 0;
       let energy = 0;
-      let transport = 0;
+      const transport = 0;
       let waste = 0;
-      let digital = 0;
+      const digital = 0;
 
       scanResult.items.forEach(item => {
         if (item.carbonCategory.startsWith('food')) {
@@ -115,6 +115,7 @@ export default function ReceiptsPage() {
                   type="file"
                   accept="image/*,application/pdf"
                   onChange={handleFileChange}
+                  aria-label="Upload receipt image or PDF file"
                   className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                 />
                 <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">

@@ -53,7 +53,7 @@ export const AnalyticsService = {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(event),
         });
-      } catch (err) {
+      } catch {
         // Fail silently in production fallbacks
       }
     }

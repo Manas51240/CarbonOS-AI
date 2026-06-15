@@ -7,8 +7,8 @@
 
 import { useState } from 'react';
 import { useCarbonStore } from '@/hooks/useCarbonStore';
-import { calculateTransportEmissions, EMISSION_FACTORS } from '@/utils/carbonCalculations';
-import { PlaneTakeoff, Car, Bus, Train, Plus, Check, Compass, Info, TrendingDown } from 'lucide-react';
+import { calculateTransportEmissions } from '@/utils/carbonCalculations';
+import { PlaneTakeoff, Car, Bus, Plus, Check, Compass, Info, TrendingDown } from 'lucide-react';
 
 export default function TravelPage() {
   const { addLog } = useCarbonStore();

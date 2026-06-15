@@ -12,7 +12,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Bell, AlertTriangle, Thermometer, Wind, Zap, Check, Sparkles } from 'lucide-react';
 
 export default function AlertsPage() {
-  const { user, refreshProfile } = useAuth();
+  const { refreshProfile } = useAuth();
   const { alerts } = useCarbonStore();
   const [completedAlertIds, setCompletedAlertIds] = useState<string[]>([]);
   const [loadingId, setLoadingId] = useState<string | null>(null);

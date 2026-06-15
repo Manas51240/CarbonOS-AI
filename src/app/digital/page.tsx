@@ -8,8 +8,8 @@
 
 import { useState } from 'react';
 import { useCarbonStore } from '@/hooks/useCarbonStore';
-import { calculateDigitalEmissions, EMISSION_FACTORS } from '@/utils/carbonCalculations';
-import { Smartphone, Mail, Tv, Video, Database, Plus, Check, Info, TrendingDown } from 'lucide-react';
+import { calculateDigitalEmissions } from '@/utils/carbonCalculations';
+import { Smartphone, Mail, Tv, Video, Database, Plus, Check, Info } from 'lucide-react';
 
 export default function DigitalPage() {
   const { addLog } = useCarbonStore();
@@ -81,13 +81,14 @@ export default function DigitalPage() {
               {/* Emails sent/received */}
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
+                  <label htmlFor="emails-input" className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
                     <Mail className="w-4 h-4 text-primary" />
                     <span>Emails Exchanged</span>
                   </label>
                   <span className="text-xs font-bold text-primary">{emails} emails</span>
                 </div>
                 <input
+                  id="emails-input"
                   type="range"
                   min="0"
                   max="150"
@@ -100,13 +101,14 @@ export default function DigitalPage() {
               {/* Streaming Video hours */}
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
+                  <label htmlFor="streaming-input" className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
                     <Tv className="w-4 h-4 text-purple-500" />
                     <span>Video Streaming (HD)</span>
                   </label>
                   <span className="text-xs font-bold text-primary">{streaming} hours</span>
                 </div>
                 <input
+                  id="streaming-input"
                   type="range"
                   min="0"
                   max="12"
@@ -120,13 +122,14 @@ export default function DigitalPage() {
               {/* Video Calls */}
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
+                  <label htmlFor="calls-input" className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
                     <Video className="w-4 h-4 text-blue-500" />
                     <span>Video Conferences</span>
                   </label>
                   <span className="text-xs font-bold text-primary">{calls} hours</span>
                 </div>
                 <input
+                  id="calls-input"
                   type="range"
                   min="0"
                   max="8"
@@ -140,13 +143,14 @@ export default function DigitalPage() {
               {/* Cloud storage */}
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
+                  <label htmlFor="storage-input" className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
                     <Database className="w-4 h-4 text-orange-500" />
                     <span>Cloud Backups size</span>
                   </label>
                   <span className="text-xs font-bold text-primary">{storage} GB</span>
                 </div>
                 <input
+                  id="storage-input"
                   type="range"
                   min="0"
                   max="200"
