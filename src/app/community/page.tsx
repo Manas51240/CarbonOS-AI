@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { useCarbonStore } from '@/hooks/useCarbonStore';
 import { useAuth } from '@/hooks/useAuth';
 import { Trophy, CheckCircle, Target, Award, ArrowUp, RefreshCw, Zap } from 'lucide-react';
+import ParadigmBanner from '@/components/shared/ParadigmBanner';
 
 export default function CommunityPage() {
   const { user } = useAuth();
@@ -29,6 +30,7 @@ export default function CommunityPage() {
 
   return (
     <div className="flex flex-col gap-8 fade-in-view">
+      <ParadigmBanner />
       <header className="border-b border-muted/50 pb-6 flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight">Community Hub</h1>

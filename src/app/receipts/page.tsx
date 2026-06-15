@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { useCarbonStore } from '@/hooks/useCarbonStore';
 import { scanReceiptWithVision, ScannedReceiptResult } from '@/services/gemini';
 import { Scan, Upload, FileText, Sparkles, Check, Plus, AlertCircle, ShoppingCart } from 'lucide-react';
+import ParadigmBanner from '@/components/shared/ParadigmBanner';
 
 export default function ReceiptsPage() {
   const { addLog } = useCarbonStore();
@@ -94,6 +95,7 @@ export default function ReceiptsPage() {
 
   return (
     <div className="flex flex-col gap-8 fade-in-view">
+      <ParadigmBanner />
       <header className="border-b border-muted/50 pb-6">
         <h1 className="text-3xl font-extrabold tracking-tight">Receipt & Bill Scanner</h1>
         <p className="text-sm text-muted-foreground mt-0.5">

@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { useCarbonStore } from '@/hooks/useCarbonStore';
 import { calculateTransportEmissions } from '@/utils/carbonCalculations';
 import { PlaneTakeoff, Car, Bus, Plus, Check, Compass, Info, TrendingDown } from 'lucide-react';
+import ParadigmBanner from '@/components/shared/ParadigmBanner';
 
 export default function TravelPage() {
   const { addLog } = useCarbonStore();
@@ -75,6 +76,7 @@ export default function TravelPage() {
 
   return (
     <div className="flex flex-col gap-8 fade-in-view">
+      <ParadigmBanner />
       <header className="border-b border-muted/50 pb-6">
         <h1 className="text-3xl font-extrabold tracking-tight">Travel Footprint Analyzer</h1>
         <p className="text-sm text-muted-foreground mt-0.5">

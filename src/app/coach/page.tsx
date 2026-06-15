@@ -1,72 +1,62 @@
 'use client';
 
-/**
- * CarbonOS AI - AI Sustainability Coach
- * Chat panel connecting to Gemini 2.5 Pro to provide context-aware
- * recommendations and custom reduction plans.
- */
-
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { askAiCoach, ChatMessage } from '@/services/gemini';
+import { SustainabilityCoachService } from '@/services/SustainabilityCoachService';
+import { ChatMessage } from '@/types';
 import { Bot, Send, Loader2, BookOpen, Trash2, ArrowRight } from 'lucide-react';
+import ChatBubble from '@/components/coach/ChatBubble';
+import ParadigmBanner from '@/components/shared/ParadigmBanner';
 
+/**
+ * CarbonOS AI - Personalized Carbon Reduction Coach
+ * Chat console with context-aware advice powered by Gemini.
+ */
 export default function CoachPage() {
   const { user } = useAuth();
   
-  // Initial starting chat history
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      role: 'model',
-      content: `Hello ${user?.displayName || 'there'}! I am your CarbonOS AI Sustainability Coach, powered by Gemini 2.5 Pro. I have analyzed your carbon twin parameters. 
-
-How can I help you today? You can ask me to outline a personalized reduction plan, break down carbon calculations, or explain the ecological impact of specific activities.`,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    }
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isSending, setIsSending] = useState(false);
-  
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto scroll to bottom on new messages
+  // Initialize welcome bubble
+  useEffect(() => {
+    setMessages([
+      {
+        role: 'model',
+        content: `Hello ${user?.displayName || 'there'}! I am your Personalized Carbon Reduction Coach. I have analyzed your carbon twin profile. 
+
+Ask me to generate your custom 3-Step Carbon Reduction Plan, or analyze specific transport, energy, and diet carbon weights!`,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }
+    ]);
+  }, [user]);
+
+  // Auto scroll to bottom
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isSending]);
 
-  // Handle message send
   const handleSendMessage = async (textToSend: string) => {
-    if (!textToSend.trim() || isSending) return;
+    if (!textToSend.trim() || isSending || !user) return;
 
     const userTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const userMsg: ChatMessage = {
-      role: 'user',
-      content: textToSend,
-      timestamp: userTime
-    };
+    const userMsg: ChatMessage = { role: 'user', content: textToSend, timestamp: userTime };
 
     setMessages(prev => [...prev, userMsg]);
     setInputValue('');
     setIsSending(true);
 
-    // Context from user's current carbon twin
-    const userTwinContext = user 
-      ? `User's current profile: Diet is ${user.carbonTwin.diet}, vehicle type is ${user.carbonTwin.transportMode}, daily commute is ${user.carbonTwin.commuteDistance} miles, home energy is ${user.carbonTwin.homeEnergy}.` 
-      : '';
-
     try {
-      const reply = await askAiCoach(messages, textToSend, userTwinContext);
+      const reply = await SustainabilityCoachService.getCoachResponse(messages, textToSend, user);
       const coachTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       
-      setMessages(prev => [...prev, {
-        role: 'model',
-        content: reply,
-        timestamp: coachTime
-      }]);
+      setMessages(prev => [...prev, { role: 'model', content: reply, timestamp: coachTime }]);
     } catch {
       setMessages(prev => [...prev, {
         role: 'model',
-        content: 'I apologize, I encountered a communication error with the Vertex AI service. Please verify your connection or try again.',
+        content: 'I apologize, I encountered a communication error. Please try again.',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }]);
     } finally {
@@ -83,11 +73,13 @@ How can I help you today? You can ask me to outline a personalized reduction pla
 
   return (
     <div className="flex flex-col gap-8 flex-1 h-[calc(100vh-6rem)] fade-in-view">
+      <ParadigmBanner />
+
       <header className="border-b border-muted/50 pb-6 flex justify-between items-center shrink-0">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight">Sustainability Coach</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight">Carbon Reduction Coach</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Your context-aware ecological assistant powered by Gemini 2.5 Pro.
+            Your Personalized Carbon Reduction Coach powered by Gemini 2.5 Pro.
           </p>
         </div>
         
@@ -101,19 +93,17 @@ How can I help you today? You can ask me to outline a personalized reduction pla
               }
             ]);
           }}
-          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive px-3.5 py-2 rounded-xl bg-secondary/50 border border-muted hover:bg-destructive/10 hover:border-destructive/20 transition-all duration-300"
+          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive px-3.5 py-2 rounded-xl bg-secondary/50 border border-muted hover:bg-destructive/10 hover:border-destructive/20 transition-all duration-300 cursor-pointer"
         >
           <Trash2 className="w-3.5 h-3.5" />
           <span>Clear History</span>
         </button>
       </header>
 
-      {/* Main Chat Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 flex-1 min-h-0">
-        
-        {/* Left Suggestions Pane */}
+        {/* Left suggestions */}
         <div className="flex flex-col gap-4 lg:col-span-1 shrink-0">
-          <div className="glass-card rounded-3xl p-5 border border-muted/80 flex flex-col gap-3">
+          <div className="glass-card rounded-3xl p-5 border border-muted/80 flex flex-col gap-3 bg-background">
             <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
               <BookOpen className="w-4 h-4 text-primary" />
               <span>Suggested Queries</span>
@@ -132,52 +122,15 @@ How can I help you today? You can ask me to outline a personalized reduction pla
               ))}
             </div>
           </div>
-          
-          <div className="glass-card rounded-3xl p-5 border border-muted/80 text-xs text-muted-foreground leading-relaxed">
-            💡 <span className="font-bold text-foreground">AI Context Integration</span>: The coach dynamically accesses your current simulated Carbon Twin metrics to customize its carbon reduction strategies and savings calculations.
-          </div>
         </div>
 
-        {/* Right Chat Dialog Box */}
-        <div className="lg:col-span-3 glass-card rounded-3xl border border-muted/80 flex flex-col min-h-0 overflow-hidden shadow-sm">
-          {/* Messages Flow Area */}
+        {/* Right chat panel */}
+        <div className="lg:col-span-3 glass-card rounded-3xl border border-muted/80 flex flex-col min-h-0 overflow-hidden shadow-sm bg-background">
           <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
-            {messages.map((msg, idx) => {
-              const isAi = msg.role === 'model';
-              return (
-                <div
-                  key={idx}
-                  className={`flex gap-3 max-w-[85%] ${isAi ? 'self-start' : 'self-end flex-row-reverse'}`}
-                >
-                  {/* Icon Avatar */}
-                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm ${
-                    isAi 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'bg-gradient-to-tr from-accent to-emerald-500 text-background font-bold'
-                  }`}>
-                    {isAi ? <Bot className="w-5 h-5" /> : user?.displayName.charAt(0)}
-                  </div>
-
-                  {/* Bubble content */}
-                  <div className="flex flex-col gap-1">
-                    <div className={`rounded-2xl px-4 py-3 text-xs leading-relaxed font-medium ${
-                      isAi
-                        ? 'bg-secondary/60 text-foreground border border-muted/40 rounded-tl-none whitespace-pre-line'
-                        : 'bg-primary text-primary-foreground rounded-tr-none'
-                    }`}>
-                      {msg.content}
-                    </div>
-                    <span className={`text-[9px] text-muted-foreground font-semibold px-1 ${
-                      isAi ? 'self-start' : 'self-end'
-                    }`}>
-                      {msg.timestamp}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
+            {messages.map((msg, idx) => (
+              <ChatBubble key={idx} msg={msg} displayName={user?.displayName || 'User'} />
+            ))}
             
-            {/* AI typing bubble */}
             {isSending && (
               <div className="flex gap-3 self-start max-w-[85%]">
                 <div className="w-9 h-9 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shrink-0 animate-pulse">
@@ -185,15 +138,13 @@ How can I help you today? You can ask me to outline a personalized reduction pla
                 </div>
                 <div className="rounded-2xl px-4 py-3 bg-secondary/60 text-muted-foreground border border-muted/40 rounded-tl-none flex items-center gap-1 text-xs">
                   <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
-                  <span>Coach is analyzing carbon statistics...</span>
+                  <span>Coach is formulating carbon reduction plan...</span>
                 </div>
               </div>
             )}
-            
             <div ref={chatEndRef} />
           </div>
 
-          {/* Form input footer */}
           <form
             onSubmit={(e) => { e.preventDefault(); handleSendMessage(inputValue); }}
             className="p-4 border-t border-muted/50 bg-secondary/20 flex gap-2 items-center"
@@ -216,7 +167,6 @@ How can I help you today? You can ask me to outline a personalized reduction pla
             </button>
           </form>
         </div>
-
       </div>
     </div>
   );

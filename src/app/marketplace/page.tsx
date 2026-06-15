@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { useCarbonStore } from '@/hooks/useCarbonStore';
 import { useAuth } from '@/hooks/useAuth';
 import { ShoppingBag, Check, RefreshCw, AlertTriangle } from 'lucide-react';
+import ParadigmBanner from '@/components/shared/ParadigmBanner';
 
 export default function MarketplacePage() {
   const { user } = useAuth();
@@ -42,6 +43,7 @@ export default function MarketplacePage() {
 
   return (
     <div className="flex flex-col gap-8 fade-in-view">
+      <ParadigmBanner />
       <header className="border-b border-muted/50 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight">Rewards Marketplace</h1>

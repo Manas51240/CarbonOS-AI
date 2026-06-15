@@ -4,58 +4,7 @@
  * Automatically falls back to interactive localStorage engine if Firebase env keys are missing.
  */
 
-// User profile interface
-export interface UserProfile {
-  uid: string;
-  email: string;
-  displayName: string;
-  photoURL?: string;
-  sustainabilityScore: number;
-  greenPoints: number;
-  co2SavedKg: number;
-  carbonTwin: {
-    diet: string;
-    transportMode: string;
-    commuteDistance: number;
-    homeEnergy: string;
-    digitalUsage: string;
-    avatarUrl?: string;
-  };
-}
-
-export interface FootprintLog {
-  id: string;
-  date: string; // YYYY-MM-DD
-  transport: number; // kg CO2
-  energy: number;
-  food: number;
-  digital: number;
-  waste: number;
-  total: number;
-}
-
-export interface Challenge {
-  id: string;
-  title: string;
-  description: string;
-  category: 'transport' | 'energy' | 'food' | 'digital' | 'waste';
-  pointsReward: number;
-  co2SavedEstimate: number;
-  durationDays: number;
-  progress: number; // 0 to 100
-  completed: boolean;
-  joined: boolean;
-}
-
-export interface Reward {
-  id: string;
-  title: string;
-  description: string;
-  provider: string;
-  costPoints: number;
-  category: 'donation' | 'product' | 'service';
-  image: string;
-}
+import { UserProfile, FootprintLog, Challenge, Reward } from '@/types';
 
 // Initial mock challenges
 const INITIAL_CHALLENGES: Challenge[] = [

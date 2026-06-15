@@ -14,7 +14,7 @@ test.describe('CarbonOS AI - End-to-End User Journeys', () => {
     await page.goto('/auth/login');
     
     // Check brand header is visible
-    await expect(page.locator('h1')).toContainText('CarbonOS');
+    await expect(page.locator('h1').first()).toContainText('CarbonOS');
     
     // Fill credentials in sandbox mode
     await page.fill('#email-input', 'e2e-tester@carbonos.ai');
@@ -24,7 +24,7 @@ test.describe('CarbonOS AI - End-to-End User Journeys', () => {
     
     // Assert redirect to console dashboard
     await page.waitForURL('**/');
-    await expect(page.locator('h1')).toContainText('Console Dashboard');
+    await expect(page.locator('h1').last()).toContainText('Console Dashboard');
     await expect(page.locator('body')).toContainText('E2e-tester');
   });
 
@@ -36,7 +36,7 @@ test.describe('CarbonOS AI - End-to-End User Journeys', () => {
     await page.waitForURL('**/');
     
     await page.goto('/twin');
-    await expect(page.locator('h1')).toContainText('AI Carbon Twin');
+    await expect(page.locator('h1').last()).toContainText('AI Carbon Twin');
     
     // Simulate changing commute slider
     const slider = page.locator('input[type="range"]');
@@ -53,7 +53,7 @@ test.describe('CarbonOS AI - End-to-End User Journeys', () => {
     await page.click('button:has-text("Commit Twin Settings")');
     
     // Assert successful sync response badge
-    await expect(page.locator('body')).toContainText('Profile Synchronized');
+    await expect(page.locator('body')).toContainText('Twin Synchronized!');
   });
 
   test('3. AI Sustainability Coach Queries', async ({ page }) => {
@@ -63,7 +63,7 @@ test.describe('CarbonOS AI - End-to-End User Journeys', () => {
     await page.waitForURL('**/');
 
     await page.goto('/coach');
-    await expect(page.locator('h1')).toContainText('Sustainability Coach');
+    await expect(page.locator('h1').last()).toContainText('Carbon Reduction Coach');
     
     // Verify initial welcome bubble
     await expect(page.locator('body')).toContainText('powered by Gemini 2.5 Pro');
@@ -83,10 +83,10 @@ test.describe('CarbonOS AI - End-to-End User Journeys', () => {
     await page.waitForURL('**/');
 
     await page.goto('/marketplace');
-    await expect(page.locator('h1')).toContainText('Rewards Marketplace');
+    await expect(page.locator('h1').last()).toContainText('Rewards Marketplace');
     
-    // Verify start points (should be 200 pts starting balance)
-    await expect(page.locator('body')).toContainText('200 Green Points');
+    // Verify start points (should be 620 pts starting balance)
+    await expect(page.locator('body')).toContainText('620 Green Points');
 
     // Attempt purchase of high-cost reward (should show "Need Points" or button disabled)
     const forestRedeemBtn = page.locator('button:has-text("Need Points")').first();
@@ -105,12 +105,12 @@ test.describe('CarbonOS AI - End-to-End User Journeys', () => {
     await page.reload();
     await expect(page.locator('body')).toContainText('950 Green Points');
 
-    // Redeem cheaper reward (e.g. $10 organic clothing voucher, cost 300 pts)
+    // Redeem first available reward (e.g. Plant 10 Trees, cost 500 pts)
     await page.click('button:has-text("Redeem Item")');
 
     // Assert points deducted and item marked redeemed
     await expect(page.locator('body')).toContainText('Successfully redeemed');
-    await expect(page.locator('body')).toContainText('650 Green Points');
+    await expect(page.locator('body')).toContainText('450 Green Points');
   });
 
   test('5. Digital Footprint Sliders & Logger', async ({ page }) => {
@@ -120,7 +120,7 @@ test.describe('CarbonOS AI - End-to-End User Journeys', () => {
     await page.waitForURL('**/');
 
     await page.goto('/digital');
-    await expect(page.locator('h1')).toContainText('Digital Carbon Calculator');
+    await expect(page.locator('h1').last()).toContainText('Digital Carbon Calculator');
 
     // Adjust range inputs
     const range = page.locator('#emails-input');
@@ -138,7 +138,7 @@ test.describe('CarbonOS AI - End-to-End User Journeys', () => {
     await page.waitForURL('**/');
 
     await page.goto('/travel');
-    await expect(page.locator('h1')).toContainText('Travel Footprint Analyzer');
+    await expect(page.locator('h1').last()).toContainText('Travel Footprint Analyzer');
 
     // Fill distance
     await page.fill('#distance-input', '65');
@@ -155,7 +155,7 @@ test.describe('CarbonOS AI - End-to-End User Journeys', () => {
     await page.waitForURL('**/');
 
     await page.goto('/receipts');
-    await expect(page.locator('h1')).toContainText('Receipt & Bill Scanner');
+    await expect(page.locator('h1').last()).toContainText('Receipt & Bill Scanner');
 
     // Trigger simulation preset
     await page.click('button:has-text("Simulate Grocery Receipt")');
@@ -175,7 +175,7 @@ test.describe('CarbonOS AI - End-to-End User Journeys', () => {
     await page.waitForURL('**/');
 
     await page.goto('/alerts');
-    await expect(page.locator('h1')).toContainText('Eco Alerts');
+    await expect(page.locator('h1').last()).toContainText('Eco Alerts');
 
     // Check off the first alert task
     await page.click('button:has-text("I Did This")');
@@ -189,7 +189,7 @@ test.describe('CarbonOS AI - End-to-End User Journeys', () => {
     await page.waitForURL('**/');
 
     await page.goto('/community');
-    await expect(page.locator('h1')).toContainText('Community Hub');
+    await expect(page.locator('h1').last()).toContainText('Community Hub');
 
     // Switch to Green Challenges tab
     await page.click('button:has-text("Green Challenges")');

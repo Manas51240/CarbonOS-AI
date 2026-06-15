@@ -6,7 +6,8 @@
  */
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { FirebaseService, FootprintLog, Challenge, Reward } from '@/services/firebase';
+import { FirebaseService } from '@/services/firebase';
+import { FootprintLog, Challenge, Reward } from '@/types';
 import { AnalyticsService } from '@/services/analytics';
 import { useAuth } from './useAuth';
 
