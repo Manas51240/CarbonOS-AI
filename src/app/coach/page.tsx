@@ -77,7 +77,7 @@ Ask me to generate your custom 3-Step Carbon Reduction Plan, or analyze specific
 
       <header className="border-b border-muted/50 pb-6 flex justify-between items-center shrink-0">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight">Carbon Reduction Coach</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight">Sustainability Coach</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             Your Personalized Carbon Reduction Coach powered by Gemini 2.5 Pro.
           </p>

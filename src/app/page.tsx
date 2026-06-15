@@ -24,7 +24,7 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const { score } = useCarbonScore();
   const { logs, addLog } = useEmissionTracking();
-  const { alerts, personalizedPlan } = useSustainabilityInsights();
+  const { alerts, personalizedPlan, challenges } = useSustainabilityInsights();
 
   const activeAlert = alerts[0];
   const todayStr = new Date().toISOString().split('T')[0];
@@ -123,6 +123,21 @@ export default function DashboardPage() {
         </div>
 
         <QuickLogForm onLogSubmit={handleLogActivity} />
+      </section>
+ 
+      {/* Daily Challenges Quick Access */}
+      <section className="glass-card rounded-3xl p-6 border border-muted/80 flex flex-col md:flex-row justify-between items-center gap-4 bg-background">
+        <div>
+          <h2 className="text-sm font-bold uppercase tracking-wider">Active Challenge Tracker</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {challenges.filter(c => c.joined && !c.completed).length > 0 
+              ? `You have ${challenges.filter(c => c.joined && !c.completed).length} active challenges to earn Green Points!`
+              : 'No active challenges joined. Head over to the Leaderboards to take part in daily eco goals!'}
+          </p>
+        </div>
+        <Link href="/community" className="px-5 py-2.5 bg-primary text-primary-foreground rounded-xl text-xs font-bold hover:shadow-md transition-all duration-300">
+          Browse Challenges
+        </Link>
       </section>
     </div>
   );

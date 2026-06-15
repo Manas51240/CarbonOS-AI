@@ -53,7 +53,7 @@ test.describe('CarbonOS AI - End-to-End User Journeys', () => {
     await page.click('button:has-text("Commit Twin Settings")');
     
     // Assert successful sync response badge
-    await expect(page.locator('body')).toContainText('Twin Synchronized!');
+    await expect(page.locator('body')).toContainText('Profile Synchronized!');
   });
 
   test('3. AI Sustainability Coach Queries', async ({ page }) => {
@@ -63,7 +63,7 @@ test.describe('CarbonOS AI - End-to-End User Journeys', () => {
     await page.waitForURL('**/');
 
     await page.goto('/coach');
-    await expect(page.locator('h1').last()).toContainText('Carbon Reduction Coach');
+    await expect(page.locator('h1').last()).toContainText('Sustainability Coach');
     
     // Verify initial welcome bubble
     await expect(page.locator('body')).toContainText('powered by Gemini 2.5 Pro');
