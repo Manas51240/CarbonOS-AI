@@ -112,4 +112,95 @@ test.describe('CarbonOS AI - End-to-End User Journeys', () => {
     await expect(page.locator('body')).toContainText('Successfully redeemed');
     await expect(page.locator('body')).toContainText('650 Green Points');
   });
+
+  test('5. Digital Footprint Sliders & Logger', async ({ page }) => {
+    await page.goto('/auth/login');
+    await page.fill('#email-input', 'digital@carbonos.ai');
+    await page.click('button[type="submit"]');
+    await page.waitForURL('**/');
+
+    await page.goto('/digital');
+    await expect(page.locator('h1')).toContainText('Digital Carbon Calculator');
+
+    // Adjust range inputs
+    const range = page.locator('#emails-input');
+    await range.fill('80');
+
+    // Log the output
+    await page.click('button:has-text("Log Digital Output")');
+    await expect(page.locator('body')).toContainText('Log Saved!');
+  });
+
+  test('6. Travel Analyzer Distance Logging', async ({ page }) => {
+    await page.goto('/auth/login');
+    await page.fill('#email-input', 'traveler@carbonos.ai');
+    await page.click('button[type="submit"]');
+    await page.waitForURL('**/');
+
+    await page.goto('/travel');
+    await expect(page.locator('h1')).toContainText('Travel Footprint Analyzer');
+
+    // Fill distance
+    await page.fill('#distance-input', '65');
+
+    // Log trip
+    await page.click('button:has-text("Log Journey")');
+    await expect(page.locator('body')).toContainText('Trip Logged!');
+  });
+
+  test('7. Receipt OCR Simulation & Daily Log Additions', async ({ page }) => {
+    await page.goto('/auth/login');
+    await page.fill('#email-input', 'scanner@carbonos.ai');
+    await page.click('button[type="submit"]');
+    await page.waitForURL('**/');
+
+    await page.goto('/receipts');
+    await expect(page.locator('h1')).toContainText('Receipt & Bill Scanner');
+
+    // Trigger simulation preset
+    await page.click('button:has-text("Simulate Grocery Receipt")');
+
+    // Wait for OCR result elements to be rendered
+    await expect(page.locator('body')).toContainText('GreenFoods Cooperative');
+
+    // Click Add scanned total to logs
+    await page.click('button:has-text("Add Scanned Total to Logs")');
+    await expect(page.locator('body')).toContainText('Added to Daily Log!');
+  });
+
+  test('8. Eco Grid Load Relief Advisories', async ({ page }) => {
+    await page.goto('/auth/login');
+    await page.fill('#email-input', 'alerts-user@carbonos.ai');
+    await page.click('button[type="submit"]');
+    await page.waitForURL('**/');
+
+    await page.goto('/alerts');
+    await expect(page.locator('h1')).toContainText('Eco Alerts');
+
+    // Check off the first alert task
+    await page.click('button:has-text("I Did This")');
+    await expect(page.locator('body')).toContainText('Action Checked!');
+  });
+
+  test('9. Green Challenges Tab & Progress Increments', async ({ page }) => {
+    await page.goto('/auth/login');
+    await page.fill('#email-input', 'challenger@carbonos.ai');
+    await page.click('button[type="submit"]');
+    await page.waitForURL('**/');
+
+    await page.goto('/community');
+    await expect(page.locator('h1')).toContainText('Community Hub');
+
+    // Switch to Green Challenges tab
+    await page.click('button:has-text("Green Challenges")');
+
+    // Join the first challenge
+    await page.click('button:has-text("Join Goal Target")');
+
+    // Perform challenge progress action
+    await page.click('button:has-text("Perform Action")');
+
+    // Assert progress updated
+    await expect(page.locator('body')).toContainText('35%');
+  });
 });
