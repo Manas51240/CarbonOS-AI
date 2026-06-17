@@ -150,6 +150,7 @@ Ask me to generate your custom 3-Step Carbon Reduction Plan, or analyze specific
             className="p-4 border-t border-muted/50 bg-secondary/20 flex gap-2 items-center"
           >
             <input
+              id="coach-chat-input"
               type="text"
               placeholder="Ask about carbon reduction, diet changes, transport tips..."
               value={inputValue}

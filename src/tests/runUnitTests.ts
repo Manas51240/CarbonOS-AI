@@ -137,7 +137,7 @@ async function executeTests() {
     assert(updatedProfile.carbonTwin.transportMode === 'electric', 'Persists twin changes');
 
     // ----------------------------------------
-    // 4. SustainabilityCoachService Tests
+        // 4. SustainabilityCoachService Tests
     // ----------------------------------------
     console.log('\n--- Testing SustainabilityCoachService ---');
     
@@ -147,6 +147,98 @@ async function executeTests() {
 
     const coachText = await SustainabilityCoachService.getCoachResponse([], 'Show my plan', updatedProfile);
     assert(coachText.includes('3-Step Carbon Reduction Plan'), 'Responds to query with active profile settings');
+
+    // Mock user profiles to cover all branches in SustainabilityCoachService
+    const meatHeavyProfile = {
+      ...updatedProfile,
+      carbonTwin: {
+        diet: 'meat-heavy' as const,
+        transportMode: 'gasoline' as const,
+        commuteDistance: 30,
+        homeEnergy: 'grid-mix' as const,
+        digitalUsage: 'high' as const
+      }
+    };
+
+    const flexitarianProfile = {
+      ...updatedProfile,
+      carbonTwin: {
+        diet: 'flexitarian' as const,
+        transportMode: 'diesel' as const,
+        commuteDistance: 10,
+        homeEnergy: 'partial-solar' as const,
+        digitalUsage: 'average' as const
+      }
+    };
+
+    const cleanLowCommuteProfile = {
+      ...updatedProfile,
+      carbonTwin: {
+        diet: 'vegetarian' as const,
+        transportMode: 'electric' as const,
+        commuteDistance: 5,
+        homeEnergy: '100-solar' as const,
+        digitalUsage: 'low' as const
+      }
+    };
+
+    const plan1 = SustainabilityCoachService.getPersonalizedPlan(meatHeavyProfile);
+    assert(plan1[0].strategy.includes('Swap 2 weekly commutes'), 'Transport commute gasoline/diesel plan');
+    assert(plan1[1].strategy.includes('Reduce red meat'), 'Diet meat-heavy plan');
+    assert(plan1[2].title.includes('Smart Thermostat'), 'Home energy grid-mix plan');
+
+    const plan2 = SustainabilityCoachService.getPersonalizedPlan(flexitarianProfile);
+    assert(plan2[0].strategy.includes('Swap 2 weekly commutes'), 'Transport commute short diesel plan');
+    assert(plan2[1].strategy.includes('Meatless Monday'), 'Diet flexitarian plan');
+    assert(plan2[2].title.includes('Digital Cleanse'), 'Home energy clean plan');
+
+    const plan3 = SustainabilityCoachService.getPersonalizedPlan(cleanLowCommuteProfile);
+    assert(plan3[0].strategy.includes('walking or cycling'), 'Active mobility low commute plan');
+    assert(plan3[1].strategy.includes('locally grown'), 'Diet vegetarian/vegan organic plan');
+
+    // Test different NLP query fallbacks
+    const solarText = await SustainabilityCoachService.getCoachResponse([], 'What about solar panels?', updatedProfile);
+    assert(solarText.includes('Installing solar panels'), 'Responds to solar query');
+
+    const dietText = await SustainabilityCoachService.getCoachResponse([], 'What should I eat for my diet?', updatedProfile);
+    assert(dietText.includes('agricultural greenhouse emissions'), 'Responds to diet query');
+
+    const driveText = await SustainabilityCoachService.getCoachResponse([], 'Tell me about my drive', updatedProfile);
+    assert(driveText.includes('reduces your transport footprint'), 'Responds to drive/car query');
+
+    const defaultText = await SustainabilityCoachService.getCoachResponse([], 'Hello', updatedProfile);
+    assert(defaultText.includes('As your Personalized Carbon Reduction Coach'), 'Responds to default query');
+
+    // Test API route success path by mocking fetch and setting API key env var
+    process.env.NEXT_PUBLIC_GEMINI_API_KEY = 'mock-api-key';
+    const originalFetch = (global as any).fetch;
+    (global as any).fetch = async (url: string) => {
+      if (url === '/api/gemini/coach') {
+        return {
+          ok: true,
+          json: async () => ({ reply: 'Gemini Coach Response' })
+        } as any;
+      }
+      return { ok: false } as any;
+    };
+
+    const apiCoachText = await SustainabilityCoachService.getCoachResponse([], 'API test', updatedProfile);
+    assert(apiCoachText === 'Gemini Coach Response', 'Fetches reply from Gemini API if key is present');
+
+    // Test API route failure path fallback
+    (global as any).fetch = async () => {
+      throw new Error('API request failed');
+    };
+    const apiFailCoachText = await SustainabilityCoachService.getCoachResponse([], 'API fail test', updatedProfile);
+    assert(apiFailCoachText.includes('As your Personalized Carbon Reduction Coach'), 'Falls back on API error');
+
+    // Clean up mocks
+    delete process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    if (originalFetch) {
+      (global as any).fetch = originalFetch;
+    } else {
+      delete (global as any).fetch;
+    }
 
     // ----------------------------------------
     // 5. RewardsService Tests

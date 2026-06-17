@@ -22,6 +22,7 @@ export default function ReceiptsUploadPanel({
           {/* Drag Drop Area */}
           <div className="border-2 border-dashed border-muted hover:border-primary/50 rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300 relative group bg-secondary/25 hover:bg-secondary/40 min-h-[180px]">
             <input
+              id="receipt-file-input"
               type="file"
               accept="image/*,application/pdf"
               onChange={onFileChange}
