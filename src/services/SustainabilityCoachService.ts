@@ -8,6 +8,23 @@ export interface ActionPlanStep {
 }
 
 /**
+ * Helper utility to sanitize dynamic user inputs to protect against XSS injections.
+ */
+export function sanitizeInput(text: string): string {
+  return text.replace(/[&<>"']/g, (m) => {
+    const map: Record<string, string> = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#x27;'
+    };
+    return map[m] || m;
+  });
+}
+
+
+/**
  * Service representing the Personalized Carbon Reduction Coach.
  * Delivers context-rich sustainability strategies and handles Gemini API interactions.
  */
@@ -86,6 +103,7 @@ export class SustainabilityCoachService {
     newMessage: string,
     user: UserProfile
   ): Promise<string> {
+    const sanitizedMsg = sanitizeInput(newMessage);
     const key = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
     const twinContext = `User's current profile: Diet is ${user.carbonTwin.diet}, vehicle type is ${user.carbonTwin.transportMode}, daily commute is ${user.carbonTwin.commuteDistance} miles, home energy is ${user.carbonTwin.homeEnergy}.`;
 
@@ -94,7 +112,7 @@ export class SustainabilityCoachService {
         const response = await fetch('/api/gemini/coach', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ history, newMessage, userContext: twinContext }),
+          body: JSON.stringify({ history, newMessage: sanitizedMsg, userContext: twinContext }),
         });
         if (response.ok) {
           const data = await response.json();
@@ -107,7 +125,7 @@ export class SustainabilityCoachService {
 
     // Context-Aware Local Reasoning fallback
     await new Promise(resolve => setTimeout(resolve, 800));
-    const query = newMessage.toLowerCase();
+    const query = sanitizedMsg.toLowerCase();
 
     if (query.includes('plan') || query.includes('reduce') || query.includes('help')) {
       const plan = this.getPersonalizedPlan(user);
