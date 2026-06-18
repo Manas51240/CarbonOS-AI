@@ -41,8 +41,16 @@ export default function CommunityPage() {
       </header>
 
       {/* Tabs Menu */}
-      <div className="flex bg-secondary/60 rounded-2xl p-1.5 border border-muted/50 self-start">
+      <div
+        role="tablist"
+        aria-label="Community Sections"
+        className="flex bg-secondary/60 rounded-2xl p-1.5 border border-muted/50 self-start"
+      >
         <button
+          id="tab-leaderboard"
+          role="tab"
+          aria-selected={activeTab === 'leaderboard'}
+          aria-controls="panel-leaderboard"
           onClick={() => setActiveTab('leaderboard')}
           className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
             activeTab === 'leaderboard'
@@ -54,6 +62,10 @@ export default function CommunityPage() {
           <span>Global Leaderboard</span>
         </button>
         <button
+          id="tab-challenges"
+          role="tab"
+          aria-selected={activeTab === 'challenges'}
+          aria-controls="panel-challenges"
           onClick={() => setActiveTab('challenges')}
           className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
             activeTab === 'challenges'
@@ -66,16 +78,32 @@ export default function CommunityPage() {
         </button>
       </div>
 
-      {activeTab === 'leaderboard' ? (
-        <LeaderboardView leaderboard={leaderboard} user={user} />
-      ) : (
-        <ChallengesView
-          challenges={challenges}
-          updatingId={updatingId}
-          onProgressIncrement={handleProgressIncrement}
-          onJoinChallenge={joinChallenge}
-        />
-      )}
+      <div
+        id="panel-leaderboard"
+        role="tabpanel"
+        aria-labelledby="tab-leaderboard"
+        hidden={activeTab !== 'leaderboard'}
+      >
+        {activeTab === 'leaderboard' && (
+          <LeaderboardView leaderboard={leaderboard} user={user} />
+        )}
+      </div>
+
+      <div
+        id="panel-challenges"
+        role="tabpanel"
+        aria-labelledby="tab-challenges"
+        hidden={activeTab !== 'challenges'}
+      >
+        {activeTab === 'challenges' && (
+          <ChallengesView
+            challenges={challenges}
+            updatingId={updatingId}
+            onProgressIncrement={handleProgressIncrement}
+            onJoinChallenge={joinChallenge}
+          />
+        )}
+      </div>
     </div>
   );
 }

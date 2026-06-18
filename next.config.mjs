@@ -1,10 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   async headers() {
+    const isDev = process.env.NODE_ENV === 'development';
     const cspHeader = `
       default-src 'self';
-      script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.run.app https://*.googleapis.com;
-      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      script-src 'self' ${isDev ? "'unsafe-eval' 'unsafe-inline'" : ""} https://*.run.app https://*.googleapis.com;
+      style-src 'self' ${isDev ? "'unsafe-inline'" : ""} https://fonts.googleapis.com;
+      style-src-attr 'self' 'unsafe-inline';
       img-src 'self' blob: data: https://*.run.app https://*.googleapis.com;
       font-src 'self' https://fonts.gstatic.com;
       connect-src 'self' https://*.run.app https://*.googleapis.com https://*.firebaseio.com;

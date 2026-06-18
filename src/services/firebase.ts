@@ -5,6 +5,7 @@
  */
 
 import { UserProfile, FootprintLog, Challenge, Reward } from '@/types';
+import { FootprintLogSchema, CarbonTwinSchema, RedeemSchema, JoinChallengeSchema, ChallengeProgressSchema } from '@/validators';
 
 // Initial mock challenges
 const INITIAL_CHALLENGES: Challenge[] = [
@@ -264,9 +265,10 @@ export const FirebaseService = {
     },
 
     async addFootprintLog(log: Omit<FootprintLog, 'id'>): Promise<FootprintLog> {
+      const validatedLog = FootprintLogSchema.parse(log);
       const logs = await this.getFootprintLogs();
       const newLog: FootprintLog = {
-        ...log,
+        ...validatedLog,
         id: Math.random().toString(36).substring(2, 9)
       };
       
@@ -304,10 +306,11 @@ export const FirebaseService = {
 
     // Carbon Twin Settings
     async updateCarbonTwin(twin: UserProfile['carbonTwin']): Promise<UserProfile> {
+      const validatedTwin = CarbonTwinSchema.parse(twin);
       const profile = getLocalStorageItem<UserProfile | null>(LOCAL_STORAGE_KEYS.USER_PROFILE, null);
       if (!profile) throw new Error('User profile not initialized');
       
-      const updatedProfile = { ...profile, carbonTwin: twin };
+      const updatedProfile = { ...profile, carbonTwin: validatedTwin };
       setLocalStorageItem(LOCAL_STORAGE_KEYS.USER_PROFILE, updatedProfile);
       return updatedProfile;
     },
@@ -318,20 +321,22 @@ export const FirebaseService = {
     },
 
     async joinChallenge(id: string): Promise<Challenge[]> {
+      const { challengeId } = JoinChallengeSchema.parse({ challengeId: id });
       const challenges = await this.getChallenges();
-      const updated = challenges.map(c => c.id === id ? { ...c, joined: true, progress: 10 } : c);
+      const updated = challenges.map(c => c.id === challengeId ? { ...c, joined: true, progress: 10 } : c);
       setLocalStorageItem(LOCAL_STORAGE_KEYS.CHALLENGES, updated);
       return updated;
     },
 
     async updateChallengeProgress(id: string, addProgress: number): Promise<{ challenges: Challenge[], completed: boolean, pointsAwarded: number }> {
+      const { challengeId, progress: validatedAddProgress } = ChallengeProgressSchema.parse({ challengeId: id, progress: addProgress });
       const challenges = await this.getChallenges();
       let completed = false;
       let pointsAwarded = 0;
       
       const updated = challenges.map(c => {
-        if (c.id === id && c.joined && !c.completed) {
-          const newProgress = Math.min(100, c.progress + addProgress);
+        if (c.id === challengeId && c.joined && !c.completed) {
+          const newProgress = Math.min(100, c.progress + validatedAddProgress);
           const isDone = newProgress >= 100;
           if (isDone) {
             completed = true;
@@ -347,7 +352,7 @@ export const FirebaseService = {
       if (completed && pointsAwarded > 0) {
         const profile = getLocalStorageItem<UserProfile | null>(LOCAL_STORAGE_KEYS.USER_PROFILE, null);
         if (profile) {
-          const target = challenges.find(c => c.id === id);
+          const target = challenges.find(c => c.id === challengeId);
           setLocalStorageItem(LOCAL_STORAGE_KEYS.USER_PROFILE, {
             ...profile,
             greenPoints: profile.greenPoints + pointsAwarded,
@@ -369,11 +374,12 @@ export const FirebaseService = {
     },
 
     async redeemReward(rewardId: string): Promise<{ success: boolean, message: string, profile?: UserProfile }> {
+      const { rewardId: validatedRewardId } = RedeemSchema.parse({ rewardId });
       const profile = getLocalStorageItem<UserProfile | null>(LOCAL_STORAGE_KEYS.USER_PROFILE, null);
       if (!profile) return { success: false, message: 'Profile not found' };
       
       const rewards = await this.getRewards();
-      const reward = rewards.find(r => r.id === rewardId);
+      const reward = rewards.find(r => r.id === validatedRewardId);
       if (!reward) return { success: false, message: 'Reward item not found' };
       
       if (profile.greenPoints < reward.costPoints) {

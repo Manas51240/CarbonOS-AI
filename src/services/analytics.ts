@@ -4,6 +4,8 @@
  * Connects to Google Cloud BigQuery API in production, otherwise log-prints and stores locally.
  */
 
+import { AnalyticsDetailsSchemaMap } from '@/validators';
+
 export interface AnalyticsEvent {
   eventId: string;
   timestamp: string;
@@ -21,12 +23,28 @@ export const AnalyticsService = {
     eventType: AnalyticsEvent['eventType'],
     details: Record<string, any>
   ): Promise<void> {
+    // Validate details with strict Zod whitelisting
+    let validatedDetails = details;
+    const schema = AnalyticsDetailsSchemaMap[eventType];
+    if (schema) {
+      const parsed = schema.safeParse(details);
+      if (parsed.success) {
+        validatedDetails = parsed.data;
+      } else {
+        console.warn(`[BigQuery Analytics] Schema validation failed for event '${eventType}':`, parsed.error.format());
+        // Return only the keys that validated or fallback to empty object if validation fails
+        validatedDetails = {};
+      }
+    } else {
+      validatedDetails = {};
+    }
+
     const event: AnalyticsEvent = {
       eventId: Math.random().toString(36).substring(2, 11),
       timestamp: new Date().toISOString(),
       uid,
       eventType,
-      details
+      details: validatedDetails
     };
 
     // Console logging for developer visibility

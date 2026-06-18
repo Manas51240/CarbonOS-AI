@@ -126,13 +126,13 @@ Ask me to generate your custom 3-Step Carbon Reduction Plan, or analyze specific
 
         {/* Right chat panel */}
         <div className="lg:col-span-3 glass-card rounded-3xl border border-muted/80 flex flex-col min-h-0 overflow-hidden shadow-sm bg-background">
-          <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
+          <div aria-live="polite" aria-atomic="false" className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
             {messages.map((msg, idx) => (
               <ChatBubble key={idx} msg={msg} displayName={user?.displayName || 'User'} />
             ))}
             
             {isSending && (
-              <div className="flex gap-3 self-start max-w-[85%]">
+              <div role="status" aria-live="polite" className="flex gap-3 self-start max-w-[85%]">
                 <div className="w-9 h-9 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shrink-0 animate-pulse">
                   <Bot className="w-5 h-5" />
                 </div>

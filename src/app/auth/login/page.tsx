@@ -123,11 +123,13 @@ export default function LoginPage() {
           </div>
 
           {/* Error Message */}
-          {error && (
-            <div className="text-xs font-semibold text-destructive bg-destructive/10 p-3 rounded-xl border border-destructive/20 mt-1">
-              {error}
-            </div>
-          )}
+          <div aria-live="assertive" id="error-message-container" className="mt-1">
+            {error && (
+              <div className="text-xs font-semibold text-destructive bg-destructive/10 p-3 rounded-xl border border-destructive/20">
+                {error}
+              </div>
+            )}
+          </div>
 
           {/* Submit Button */}
           <button

@@ -64,17 +64,19 @@ export default function MarketplacePage() {
         </div>
       </header>
 
-      {/* Message feedback */}
-      {message && (
-        <div className={`p-4 rounded-xl border text-xs font-semibold shadow-sm flex items-center gap-2 ${
-          message.type === 'success'
-            ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'
-            : 'bg-destructive/10 border-destructive/20 text-destructive'
-        }`}>
-          {message.type === 'success' ? <Check className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
-          <span>{message.text}</span>
-        </div>
-      )}
+      {/* Message feedback container */}
+      <div aria-live="polite" id="marketplace-message-container" className="w-full">
+        {message && (
+          <div className={`p-4 rounded-xl border text-xs font-semibold shadow-sm flex items-center gap-2 ${
+            message.type === 'success'
+              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'
+              : 'bg-destructive/10 border-destructive/20 text-destructive'
+          }`}>
+            {message.type === 'success' ? <Check className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
+            <span>{message.text}</span>
+          </div>
+        )}
+      </div>
 
       {/* Categories Menu */}
       <div className="flex flex-wrap gap-2.5">
