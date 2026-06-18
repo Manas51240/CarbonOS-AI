@@ -1,8 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+
+const GeminiCoachResponseSchema = z.object({
+  candidates: z.array(
+    z.object({
+      content: z.object({
+        parts: z.array(
+          z.object({
+            text: z.string()
+          })
+        )
+      })
+    })
+  )
+});
+
+interface ChatHistoryItem {
+  role: string;
+  content: string;
+}
 
 export async function POST(req: NextRequest) {
   try {
-    const { history, newMessage, userContext } = await req.json();
+    const { history, newMessage, userContext } = await req.json() as {
+      history: ChatHistoryItem[];
+      newMessage: string;
+      userContext: string;
+    };
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
@@ -14,7 +38,7 @@ export async function POST(req: NextRequest) {
         role: 'user',
         parts: [{ text: userContext || '' }]
       },
-      ...(history || []).map((msg: any) => ({
+      ...(history || []).map((msg: ChatHistoryItem) => ({
         role: msg.role === 'model' ? 'model' : 'user',
         parts: [{ text: msg.content || '' }]
       })),
@@ -41,11 +65,20 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await response.json();
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+    
+    // Zod runtime schema validation on external API payload
+    const validation = GeminiCoachResponseSchema.safeParse(data);
+    if (!validation.success) {
+      console.error('Gemini response schema validation failed:', validation.error);
+      return NextResponse.json({ reply: null, useFallback: true });
+    }
+
+    const reply = validation.data.candidates[0].content.parts[0].text || null;
 
     return NextResponse.json({ reply, useFallback: !reply });
-  } catch (error: any) {
-    console.error('Error in Gemini Coach API Route:', error);
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    console.error('Error in Gemini Coach API Route:', errorMsg);
     return NextResponse.json({ reply: null, useFallback: true });
   }
 }

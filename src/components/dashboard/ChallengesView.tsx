@@ -94,7 +94,7 @@ export default function ChallengesView({
                 <button
                   onClick={() => onProgressIncrement(c.id)}
                   disabled={updatingId === c.id}
-                  className="w-full py-2.5 mt-1 rounded-xl bg-primary text-primary-foreground font-bold text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer shadow-sm hover:shadow-md transition-all duration-300"
+                  className="w-full py-2.5 mt-1 rounded-xl bg-primary text-primary-foreground font-bold text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer shadow-sm hover:shadow-md transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
                 >
                   {updatingId === c.id ? (
                     <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -107,7 +107,7 @@ export default function ChallengesView({
             ) : (
               <button
                 onClick={() => onJoinChallenge(c.id)}
-                className="w-full py-3 rounded-xl bg-secondary/80 hover:bg-primary hover:text-primary-foreground border border-muted hover:border-primary font-bold text-xs transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5"
+                className="w-full py-3 rounded-xl bg-secondary/80 hover:bg-primary hover:text-primary-foreground border border-muted hover:border-primary font-bold text-xs transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
               >
                 <Target className="w-4 h-4 text-primary" />
                 <span>Join Goal Target</span>

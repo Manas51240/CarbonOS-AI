@@ -74,7 +74,7 @@ export default function LoginPage() {
         <div className="flex bg-secondary/60 rounded-xl p-1 mb-6 border border-muted/50">
           <button
             onClick={() => { setIsSignUp(false); setError(''); }}
-            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all duration-300 ${
+            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none ${
               !isSignUp ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground'
             }`}
           >
@@ -82,7 +82,7 @@ export default function LoginPage() {
           </button>
           <button
             onClick={() => { setIsSignUp(true); setError(''); }}
-            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all duration-300 ${
+            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none ${
               isSignUp ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground'
             }`}
           >
@@ -137,7 +137,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loadingState}
-            className="w-full py-3.5 mt-2 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow-md hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75 disabled:pointer-events-none"
+            className="w-full py-3.5 mt-2 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow-md hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75 disabled:pointer-events-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
           >
             {loadingState ? (
               <>

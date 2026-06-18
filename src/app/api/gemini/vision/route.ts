@@ -1,4 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+
+const GeminiVisionEnvelopeSchema = z.object({
+  candidates: z.array(
+    z.object({
+      content: z.object({
+        parts: z.array(
+          z.object({
+            text: z.string()
+          })
+        )
+      })
+    })
+  )
+});
+
+const ScannedReceiptSchema = z.object({
+  storeName: z.string(),
+  date: z.string(),
+  items: z.array(
+    z.object({
+      name: z.string(),
+      price: z.number(),
+      carbonCategory: z.enum(['food-high', 'food-medium', 'food-low', 'electronics', 'utilities', 'other']),
+      carbonEstimateKg: z.number(),
+      ecoFriendlyAlternative: z.string().optional()
+    })
+  ),
+  totalCost: z.number(),
+  totalCarbonKg: z.number(),
+  sustainabilityInsight: z.string()
+});
 
 export async function POST(req: NextRequest) {
   try {
@@ -70,15 +102,39 @@ Only return the raw JSON object. Do not include markdown code block formatting o
     }
 
     const data = await response.json();
-    const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    
+    // Validate envelope structure
+    const envValidation = GeminiVisionEnvelopeSchema.safeParse(data);
+    if (!envValidation.success) {
+      console.error('Gemini vision envelope validation failed:', envValidation.error);
+      return NextResponse.json({ useFallback: true });
+    }
+
+    const responseText = envValidation.data.candidates[0].content.parts[0].text;
     if (!responseText) {
       return NextResponse.json({ useFallback: true });
     }
 
-    const parsedData = JSON.parse(responseText.trim());
-    return NextResponse.json(parsedData);
-  } catch (error: any) {
-    console.error('Error in Gemini Vision API Route:', error);
+    // Parse and validate inner JSON content
+    let parsedJson;
+    try {
+      parsedJson = JSON.parse(responseText.trim());
+    } catch (e) {
+      const errorMsg = e instanceof Error ? e.message : String(e);
+      console.error('Failed to parse inner response as JSON:', errorMsg);
+      return NextResponse.json({ useFallback: true });
+    }
+
+    const receiptValidation = ScannedReceiptSchema.safeParse(parsedJson);
+    if (!receiptValidation.success) {
+      console.error('Receipt schema validation failed:', receiptValidation.error);
+      return NextResponse.json({ useFallback: true });
+    }
+
+    return NextResponse.json(receiptValidation.data);
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    console.error('Error in Gemini Vision API Route:', errorMsg);
     return NextResponse.json({ useFallback: true });
   }
 }

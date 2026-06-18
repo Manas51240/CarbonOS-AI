@@ -52,7 +52,7 @@ export default function CommunityPage() {
           aria-selected={activeTab === 'leaderboard'}
           aria-controls="panel-leaderboard"
           onClick={() => setActiveTab('leaderboard')}
-          className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
+          className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none ${
             activeTab === 'leaderboard'
               ? 'bg-primary text-primary-foreground shadow-sm'
               : 'text-muted-foreground hover:text-foreground'
@@ -67,7 +67,7 @@ export default function CommunityPage() {
           aria-selected={activeTab === 'challenges'}
           aria-controls="panel-challenges"
           onClick={() => setActiveTab('challenges')}
-          className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
+          className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none ${
             activeTab === 'challenges'
               ? 'bg-primary text-primary-foreground shadow-sm'
               : 'text-muted-foreground hover:text-foreground'
