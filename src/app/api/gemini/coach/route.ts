@@ -26,6 +26,17 @@ const CoachRequestSchema = z.object({
   userContext: z.string().optional().default('')
 });
 
+/** Server-side input sanitizer: strips HTML tags and script injection patterns */
+function sanitizeInput(input: string): string {
+  return input
+    .replace(/<[^>]*>/g, '')           // strip HTML tags
+    .replace(/javascript:/gi, '')       // strip JS URI protocol
+    .replace(/on\w+\s*=/gi, '')        // strip inline event handlers
+    .replace(/[<>]/g, '')              // strip remaining angle brackets
+    .trim()
+    .slice(0, 2000);                   // cap length to prevent token abuse
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -33,7 +44,14 @@ export async function POST(req: NextRequest) {
     if (!parsedRequest.success) {
       return NextResponse.json({ error: 'Invalid request payload', details: parsedRequest.error.issues }, { status: 400 });
     }
-    const { history, newMessage, userContext } = parsedRequest.data;
+
+    // Sanitize all user-supplied strings before forwarding to external API
+    const sanitizedMessage = sanitizeInput(parsedRequest.data.newMessage);
+    const sanitizedContext = sanitizeInput(parsedRequest.data.userContext);
+    const history = parsedRequest.data.history.map(msg => ({
+      role: msg.role,
+      content: sanitizeInput(msg.content)
+    }));
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
@@ -43,7 +61,7 @@ export async function POST(req: NextRequest) {
     const contents = [
       {
         role: 'user',
-        parts: [{ text: userContext || '' }]
+        parts: [{ text: sanitizedContext || '' }]
       },
       ...(history || []).map((msg: { role: string; content: string }) => ({
         role: msg.role === 'model' ? 'model' : 'user',
@@ -51,7 +69,7 @@ export async function POST(req: NextRequest) {
       })),
       {
         role: 'user',
-        parts: [{ text: newMessage || '' }]
+        parts: [{ text: sanitizedMessage || '' }]
       }
     ];
 

@@ -58,7 +58,7 @@ export default function SimulatorControls({
           max="100"
           value={commuteDist}
           onChange={(e) => onCommuteChange(parseInt(e.target.value))}
-          className="w-full h-2 rounded-lg bg-secondary/80 outline-none cursor-pointer mt-3"
+          className="w-full h-2 rounded-lg bg-secondary/80 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none cursor-pointer mt-3"
         />
       </div>
 

@@ -4,7 +4,7 @@ const nextConfig = {
     const isDev = process.env.NODE_ENV === 'development';
     const cspHeader = `
       default-src 'self';
-      script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.run.app https://*.googleapis.com;
+      script-src 'self' 'unsafe-inline' https://*.run.app https://*.googleapis.com;
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
       style-src-attr 'self' 'unsafe-inline';
       img-src 'self' blob: data: https://*.run.app https://*.googleapis.com;

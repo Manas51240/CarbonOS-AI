@@ -36,7 +36,7 @@ export const metadata: Metadata = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
+  // maximumScale intentionally omitted to allow browser pinch-to-zoom (WCAG 2.2 AA)
 };
 
 export default function RootLayout({
