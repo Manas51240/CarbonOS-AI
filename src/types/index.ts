@@ -130,3 +130,12 @@ export interface CarbonTwinState {
   homeEnergySource: 'grid-mix' | 'partial-solar' | '100-solar';
   digitalUsageLevel: 'low' | 'average' | 'high';
 }
+
+export interface LeaderboardEntry {
+  rank: number;
+  name: string;
+  score: number;
+  saved: number;
+  points: number;
+  isCurrentUser?: boolean;
+}

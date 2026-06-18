@@ -1,10 +1,10 @@
 'use client';
 
 import { RefreshCw } from 'lucide-react';
-import { UserProfile } from '@/types';
+import { UserProfile, LeaderboardEntry } from '@/types';
 
 interface LeaderboardViewProps {
-  leaderboard: any[];
+  leaderboard: LeaderboardEntry[];
   user: UserProfile | null;
 }
 

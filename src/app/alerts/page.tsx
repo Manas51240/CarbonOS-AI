@@ -9,6 +9,7 @@
 import { useState } from 'react';
 import { useCarbonStore } from '@/hooks/useCarbonStore';
 import { useAuth } from '@/hooks/useAuth';
+import { UserProfileService } from '@/services/UserProfileService';
 import { Bell, AlertTriangle, Thermometer, Wind, Zap, Check, Sparkles } from 'lucide-react';
 import ParadigmBanner from '@/components/shared/ParadigmBanner';
 
@@ -24,15 +25,8 @@ export default function AlertsPage() {
       // Simulate API response
       await new Promise(resolve => setTimeout(resolve, 800));
       
-      // Reward user with 50 points on local storage profile
-      if (typeof window !== 'undefined') {
-        const profile = JSON.parse(localStorage.getItem('carbonos_user_profile') || 'null');
-        if (profile) {
-          profile.greenPoints += 50;
-          profile.co2SavedKg += 4.5; // average alert saving
-          localStorage.setItem('carbonos_user_profile', JSON.stringify(profile));
-        }
-      }
+      // Reward user with 50 points via centralized UserProfileService
+      await UserProfileService.rewardUser(50, 4.5);
 
       setCompletedAlertIds(prev => [...prev, alertId]);
       await refreshProfile();

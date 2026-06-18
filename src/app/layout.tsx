@@ -3,6 +3,7 @@ import './globals.css';
 import ClientLayoutShell from '@/components/layout/ClientLayoutShell';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://carbonos-ai-160715832584.us-central1.run.app/'),
   title: 'CarbonOS AI - Sustainable Intelligence Platform',
   description: 'Track, simulate, and optimize your carbon footprint using AI Carbon Twins, context-aware coaching, and receipt scanner insights.',
   keywords: ['sustainability', 'carbon footprint', 'AI carbon twin', 'climate action', 'carbon rewards'],

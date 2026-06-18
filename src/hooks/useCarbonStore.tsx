@@ -7,7 +7,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { FirebaseService } from '@/services/firebase';
-import { FootprintLog, Challenge, Reward } from '@/types';
+import { FootprintLog, Challenge, Reward, LeaderboardEntry } from '@/types';
 import { AnalyticsService } from '@/services/analytics';
 import { useAuth } from './useAuth';
 
@@ -25,7 +25,7 @@ interface CarbonStoreContextType {
   challenges: Challenge[];
   rewards: Reward[];
   purchasedRewards: string[];
-  leaderboard: any[];
+  leaderboard: LeaderboardEntry[];
   alerts: SustainabilityAlert[];
   twinSimState: {
     dietType: 'vegan' | 'vegetarian' | 'flexitarian' | 'meat-heavy';
@@ -79,7 +79,7 @@ export function CarbonStoreProvider({ children }: { children: React.ReactNode })
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [purchasedRewards, setPurchasedRewards] = useState<string[]>([]);
-  const [leaderboard, setLeaderboard] = useState<any[]>([]);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [alerts] = useState<SustainabilityAlert[]>(DEFAULT_ALERTS);
   const [loading, setLoading] = useState<boolean>(true);
 

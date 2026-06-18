@@ -4,7 +4,7 @@
  * Automatically falls back to interactive localStorage engine if Firebase env keys are missing.
  */
 
-import { UserProfile, FootprintLog, Challenge, Reward } from '@/types';
+import { UserProfile, FootprintLog, Challenge, Reward, LeaderboardEntry } from '@/types';
 import { FootprintLogSchema, CarbonTwinSchema, RedeemSchema, JoinChallengeSchema, ChallengeProgressSchema } from '@/validators';
 
 // Initial mock challenges
@@ -404,7 +404,7 @@ export const FirebaseService = {
     },
 
     // Leaderboards
-    async getLeaderboard(): Promise<Array<{ rank: number, name: string, score: number, points: number, saved: number, isCurrentUser: boolean }>> {
+    async getLeaderboard(): Promise<LeaderboardEntry[]> {
       const profile = getLocalStorageItem<UserProfile | null>(LOCAL_STORAGE_KEYS.USER_PROFILE, null);
       if (!profile) return MOCK_LEADERBOARD;
       

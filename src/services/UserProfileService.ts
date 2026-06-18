@@ -113,4 +113,19 @@ export class UserProfileService {
     }
     return updatedProfile;
   }
+
+  /**
+   * Reward user with points and co2 offset credits.
+   */
+  static async rewardUser(points: number, co2Saved: number): Promise<UserProfile | null> {
+    const profile = await this.getCurrentUser();
+    if (!profile) return null;
+    
+    profile.greenPoints += points;
+    profile.co2SavedKg += co2Saved;
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(USER_PROFILE_KEY, JSON.stringify(profile));
+    }
+    return profile;
+  }
 }
