@@ -210,7 +210,7 @@ async function executeTests() {
     assert(defaultText.includes('As your Personalized Carbon Reduction Coach'), 'Responds to default query');
 
     // Test API route success path by mocking fetch and setting API key env var
-    process.env.NEXT_PUBLIC_GEMINI_API_KEY = 'mock-api-key';
+    (global as any).__mockGeminiApi = true;
     const originalFetch = (global as any).fetch;
     (global as any).fetch = async (url: string) => {
       if (url === '/api/gemini/coach') {
@@ -233,7 +233,7 @@ async function executeTests() {
     assert(apiFailCoachText.includes('As your Personalized Carbon Reduction Coach'), 'Falls back on API error');
 
     // Clean up mocks
-    delete process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    delete (global as any).__mockGeminiApi;
     if (originalFetch) {
       (global as any).fetch = originalFetch;
     } else {

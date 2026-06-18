@@ -77,7 +77,14 @@ export default function ChallengesView({
                   <span className="text-muted-foreground font-semibold">Active Progress:</span>
                   <span className="font-extrabold text-primary">{c.progress}%</span>
                 </div>
-                <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
+                <div 
+                  className="w-full bg-muted h-2 rounded-full overflow-hidden"
+                  role="progressbar"
+                  aria-valuenow={c.progress}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-label={`${c.title} progress`}
+                >
                   <div
                     className="h-full bg-primary rounded-full transition-all duration-300"
                     style={{ width: `${c.progress}%` }}

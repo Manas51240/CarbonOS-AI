@@ -25,6 +25,9 @@ export interface ScannedReceiptResult {
   sustainabilityInsight: string;
 }
 
+const isTesting = typeof process !== 'undefined' && process.env.NODE_ENV === 'test';
+const shouldCallApi = isTesting ? !!(global as any).__mockGeminiApi : true;
+
 /**
  * Sends chat message to AI Coach
  */
@@ -33,8 +36,8 @@ export async function askAiCoach(
   newMessage: string,
   userContext?: string
 ): Promise<string> {
-  // Check if real API keys are configured (server side API endpoint)
-  if (process.env.NEXT_PUBLIC_GEMINI_API_KEY) {
+  // Check if API endpoints can be reached
+  if (shouldCallApi) {
     try {
       const response = await fetch('/api/gemini/coach', {
         method: 'POST',
@@ -43,7 +46,9 @@ export async function askAiCoach(
       });
       if (response.ok) {
         const data = await response.json();
-        return data.reply;
+        if (data.reply) {
+          return data.reply;
+        }
       }
     } catch (e) {
       console.warn('Real Gemini API call failed, falling back to local coach simulation', e);
@@ -112,7 +117,7 @@ export async function scanReceiptWithVision(
   fileNameText: string
 ): Promise<ScannedReceiptResult> {
   // Real API path
-  if (process.env.NEXT_PUBLIC_GEMINI_API_KEY && imageFile) {
+  if (shouldCallApi && imageFile) {
     try {
       const formData = new FormData();
       formData.append('image', imageFile);
@@ -121,7 +126,10 @@ export async function scanReceiptWithVision(
         body: formData,
       });
       if (response.ok) {
-        return await response.json();
+        const data = await response.json();
+        if (!data.useFallback) {
+          return data;
+        }
       }
     } catch (e) {
       console.warn('Real Gemini Vision call failed, falling back to local simulation', e);

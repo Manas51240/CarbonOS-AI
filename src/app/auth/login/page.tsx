@@ -8,6 +8,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { LoginSchema } from '@/validators';
 import { Leaf, Mail, User, Sparkles, Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
@@ -22,13 +23,14 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
     
-    if (!email) {
-      setError('Email field is required');
-      return;
-    }
+    // Zod schema validation
+    const result = LoginSchema.safeParse({
+      email,
+      displayName: isSignUp ? name : undefined
+    });
 
-    if (isSignUp && !name) {
-      setError('Name field is required');
+    if (!result.success) {
+      setError(result.error.issues[0].message);
       return;
     }
 

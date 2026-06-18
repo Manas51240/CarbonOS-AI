@@ -104,10 +104,11 @@ export class SustainabilityCoachService {
     user: UserProfile
   ): Promise<string> {
     const sanitizedMsg = sanitizeInput(newMessage);
-    const key = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    const isTesting = typeof process !== 'undefined' && process.env.NODE_ENV === 'test';
+    const shouldCallApi = isTesting ? !!(global as any).__mockGeminiApi : true;
     const twinContext = `User's current profile: Diet is ${user.carbonTwin.diet}, vehicle type is ${user.carbonTwin.transportMode}, daily commute is ${user.carbonTwin.commuteDistance} miles, home energy is ${user.carbonTwin.homeEnergy}.`;
 
-    if (key) {
+    if (shouldCallApi) {
       try {
         const response = await fetch('/api/gemini/coach', {
           method: 'POST',
@@ -116,7 +117,9 @@ export class SustainabilityCoachService {
         });
         if (response.ok) {
           const data = await response.json();
-          return data.reply;
+          if (data.reply) {
+            return data.reply;
+          }
         }
       } catch (e) {
         console.warn('Real Gemini API call failed, falling back to local coach simulation', e);

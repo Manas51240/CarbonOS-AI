@@ -29,24 +29,39 @@ function ShellContent({ children }: { children: React.ReactNode }) {
     }
   }, [user, loading, isAuthPage, router]);
 
+  // Auth pages (no Sidebar, full width) - render immediately to avoid loading flash
+  if (isAuthPage) {
+    return <div className="min-h-screen bg-background">{children}</div>;
+  }
+
   if (loading) {
     return (
-      <div className="w-screen h-screen flex flex-col items-center justify-center bg-background text-foreground">
-        <div className="flex flex-col items-center gap-4 animate-pulse">
-          <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-            <Leaf className="w-8 h-8 text-background animate-spin-slow" />
+      <div className="min-h-screen bg-background flex">
+        {/* Skeleton Sidebar Drawer */}
+        <aside className="w-80 h-screen fixed left-0 top-0 glass-panel border-r flex flex-col p-6 z-40">
+          <div className="flex-1 flex flex-col gap-4 animate-pulse">
+            <div className="h-8 bg-muted rounded-xl w-2/3" />
+            <div className="h-20 bg-muted rounded-2xl w-full" />
+            <div className="h-8 bg-muted rounded-xl w-5/6 mt-6" />
+            <div className="h-8 bg-muted rounded-xl w-3/4" />
+            <div className="h-8 bg-muted rounded-xl w-2/3" />
+            <div className="h-8 bg-muted rounded-xl w-4/5" />
           </div>
-          <div className="text-center">
-            <h1 className="text-lg font-bold tracking-tight text-primary">CarbonOS AI</h1>
-            <p className="text-xs text-muted-foreground">Syncing environmental intelligence...</p>
+        </aside>
+        
+        {/* Main Panel Skeleton */}
+        <main className="pl-80 flex-1 min-h-screen bg-background overflow-x-hidden relative p-8">
+          <div className="max-w-6xl mx-auto w-full min-h-full flex flex-col items-center justify-center py-20">
+            <Leaf className="w-8 h-8 text-primary animate-spin" />
+            <p className="text-xs text-muted-foreground mt-4">Syncing environmental intelligence...</p>
           </div>
-        </div>
+        </main>
       </div>
     );
   }
 
-  // Auth pages (no Sidebar, full width)
-  if (isAuthPage || !user) {
+  // Not logged in guest redirection fallback
+  if (!user) {
     return <div className="min-h-screen bg-background">{children}</div>;
   }
 

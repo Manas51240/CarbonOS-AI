@@ -96,11 +96,11 @@ export function CarbonStoreProvider({ children }: { children: React.ReactNode })
   useEffect(() => {
     if (user?.carbonTwin) {
       setTwinSimState({
-        dietType: (user.carbonTwin.diet || 'flexitarian') as any,
-        carFuel: (user.carbonTwin.transportMode || 'gasoline') as any,
+        dietType: (user.carbonTwin.diet || 'flexitarian') as 'vegan' | 'vegetarian' | 'flexitarian' | 'meat-heavy',
+        carFuel: (user.carbonTwin.transportMode || 'gasoline') as 'gasoline' | 'diesel' | 'hybrid' | 'electric',
         dailyCommuteMiles: user.carbonTwin.commuteDistance || 15,
         homeEnergySource: (user.carbonTwin.homeEnergy === '100-solar' ? '100-solar' : user.carbonTwin.homeEnergy === 'partial-solar' ? 'partial-solar' : 'grid-mix'),
-        digitalUsageLevel: (user.carbonTwin.digitalUsage || 'average') as any,
+        digitalUsageLevel: (user.carbonTwin.digitalUsage || 'average') as 'low' | 'average' | 'high',
       });
     }
   }, [user]);

@@ -75,7 +75,7 @@ export default function QuickLogForm({ onLogSubmit }: QuickLogFormProps) {
             <select
               id="quick-diet-select"
               value={diet}
-              onChange={(e) => setDiet(e.target.value as any)}
+              onChange={(e) => setDiet(e.target.value as 'vegan' | 'vegetarian' | 'flexitarian' | 'meat-heavy')}
               className="w-full px-3.5 py-2.5 rounded-xl bg-secondary/40 border border-muted focus:border-primary focus:ring-1 focus:ring-primary text-sm font-semibold outline-none transition-all duration-300"
             >
               <option value="vegan">Vegan (Low Impact)</option>

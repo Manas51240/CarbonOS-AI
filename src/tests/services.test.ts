@@ -159,7 +159,7 @@ describe('SustainabilityCoachService', () => {
     expect(updatedProfile).not.toBeNull();
     if (!updatedProfile) return;
 
-    process.env.NEXT_PUBLIC_GEMINI_API_KEY = 'mock-api-key';
+    (global as any).__mockGeminiApi = true;
     const mockFetch = vi.fn().mockImplementation(async (url: string) => {
       if (url === '/api/gemini/coach') {
         return {
@@ -179,7 +179,7 @@ describe('SustainabilityCoachService', () => {
     const apiFailCoachText = await SustainabilityCoachService.getCoachResponse([], 'API fail test', updatedProfile);
     expect(apiFailCoachText).toContain('As your Personalized Carbon Reduction Coach');
 
-    delete process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    delete (global as any).__mockGeminiApi;
     delete (global as any).fetch;
   });
 });

@@ -69,7 +69,12 @@ export default function ScoreTracker({ score, size = 180 }: ScoreTrackerProps) {
     <div className="flex flex-col items-center justify-center select-none">
       <div className="relative" style={{ width: size, height: size }}>
         {/* SVG Dial */}
-        <svg className="w-full h-full transform -rotate-90" viewBox={`0 0 ${size} ${size}`}>
+        <svg 
+          className="w-full h-full transform -rotate-90" 
+          viewBox={`0 0 ${size} ${size}`}
+          role="img"
+          aria-label={`Carbon sustainability rating: ${score} out of 100 - ${rating} rating`}
+        >
           {/* Defs for gradients */}
           <defs>
             <linearGradient id="score-high" x1="0%" y1="0%" x2="100%" y2="100%">

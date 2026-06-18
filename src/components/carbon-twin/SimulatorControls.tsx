@@ -35,7 +35,7 @@ export default function SimulatorControls({
         <select
           id="diet-select"
           value={diet}
-          onChange={(e) => onDietChange(e.target.value as any)}
+          onChange={(e) => onDietChange(e.target.value as CarbonTwinState['dietType'])}
           className="w-full px-3.5 py-3 rounded-xl bg-secondary/40 border border-muted focus:border-primary text-sm font-semibold outline-none transition-all duration-300"
         >
           <option value="vegan">Vegan (Low CO₂)</option>
@@ -68,7 +68,7 @@ export default function SimulatorControls({
         <select
           id="transport-select"
           value={transportMode}
-          onChange={(e) => onTransportChange(e.target.value as any)}
+          onChange={(e) => onTransportChange(e.target.value as CarbonTwinState['carFuel'])}
           className="w-full px-3.5 py-3 rounded-xl bg-secondary/40 border border-muted focus:border-primary text-sm font-semibold outline-none transition-all duration-300"
         >
           <option value="electric">Electric (EV)</option>
@@ -84,7 +84,7 @@ export default function SimulatorControls({
         <select
           id="energy-select"
           value={energySource}
-          onChange={(e) => onEnergyChange(e.target.value as any)}
+          onChange={(e) => onEnergyChange(e.target.value as CarbonTwinState['homeEnergySource'])}
           className="w-full px-3.5 py-3 rounded-xl bg-secondary/40 border border-muted focus:border-primary text-sm font-semibold outline-none transition-all duration-300"
         >
           <option value="100-solar">100% Rooftop Solar / Off-Grid</option>
@@ -99,7 +99,7 @@ export default function SimulatorControls({
         <select
           id="digital-select"
           value={digitalLevel}
-          onChange={(e) => onDigitalChange(e.target.value as any)}
+          onChange={(e) => onDigitalChange(e.target.value as CarbonTwinState['digitalUsageLevel'])}
           className="w-full px-3.5 py-3 rounded-xl bg-secondary/40 border border-muted focus:border-primary text-sm font-semibold outline-none transition-all duration-300"
         >
           <option value="low">Minimal (Eco stream, local mail)</option>

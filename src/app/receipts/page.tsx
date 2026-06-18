@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useCarbonStore } from '@/hooks/useCarbonStore';
 import { scanReceiptWithVision, ScannedReceiptResult } from '@/services/gemini';
+import { CarbonCalculationService } from '@/services/CarbonCalculationService';
 import ParadigmBanner from '@/components/shared/ParadigmBanner';
 import ReceiptsUploadPanel from '@/components/dashboard/ReceiptsUploadPanel';
 import ReceiptsResultsPanel from '@/components/dashboard/ReceiptsResultsPanel';
@@ -19,7 +20,7 @@ export default function ReceiptsPage() {
   const [scanResult, setScanResult] = useState<ScannedReceiptResult | null>(null);
   const [isLogged, setIsLogged] = useState(false);
 
-  const handleScan = async (fileToScan: File, fileName: string) => {
+  const handleScan = async (fileToScan: File | null, fileName: string) => {
     setIsScanning(true);
     setScanResult(null);
     setIsLogged(false);
@@ -45,7 +46,7 @@ export default function ReceiptsPage() {
   const triggerPresetScan = (type: 'grocery' | 'utility') => {
     setSelectedFile(null);
     const mockFileName = type === 'grocery' ? 'weekly_grocery_invoice.png' : 'utility_bill_june.pdf';
-    handleScan(null as any, mockFileName);
+    handleScan(null, mockFileName);
   };
 
   const handleAddToLogs = async () => {
@@ -53,31 +54,16 @@ export default function ReceiptsPage() {
     setIsScanning(true);
     
     try {
-      let food = 0;
-      let energy = 0;
-      const transport = 0;
-      let waste = 0;
-      const digital = 0;
-
-      scanResult.items.forEach(item => {
-        if (item.carbonCategory.startsWith('food')) {
-          food += item.carbonEstimateKg;
-        } else if (item.carbonCategory === 'utilities') {
-          energy += item.carbonEstimateKg;
-        } else {
-          waste += item.carbonEstimateKg;
-        }
-      });
-
+      const breakdown = CarbonCalculationService.calculateReceiptEmissions(scanResult.items);
       const todayStr = new Date().toISOString().split('T')[0];
 
       await addLog({
         date: todayStr,
-        transport,
-        energy,
-        food,
-        digital,
-        waste,
+        transport: breakdown.transport,
+        energy: breakdown.energy,
+        food: breakdown.food,
+        digital: breakdown.digital,
+        waste: breakdown.waste,
         total: scanResult.totalCarbonKg
       });
 

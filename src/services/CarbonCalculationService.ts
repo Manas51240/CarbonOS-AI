@@ -132,4 +132,37 @@ export class CarbonCalculationService {
     const score = 100 - ((dailyFootprintKg - 10) / 40) * 100;
     return Math.round(score);
   }
+
+  /**
+   * Categorizes and aggregates carbon emissions from receipt items.
+   */
+  static calculateReceiptEmissions(items: { carbonCategory: string; carbonEstimateKg: number }[]): {
+    food: number;
+    energy: number;
+    transport: number;
+    waste: number;
+    digital: number;
+  } {
+    let food = 0;
+    let energy = 0;
+    let waste = 0;
+    
+    items.forEach(item => {
+      if (item.carbonCategory.startsWith('food')) {
+        food += item.carbonEstimateKg;
+      } else if (item.carbonCategory === 'utilities') {
+        energy += item.carbonEstimateKg;
+      } else {
+        waste += item.carbonEstimateKg;
+      }
+    });
+
+    return {
+      food,
+      energy,
+      transport: 0,
+      waste,
+      digital: 0,
+    };
+  }
 }
