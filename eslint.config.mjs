@@ -20,12 +20,21 @@ const eslintConfig = [
     }
   },
   {
+    // Test scripts and standalone utility runners use global mocking (global as any)
+    // which is unavoidable in Node.js test harnesses without type declaration files.
+    files: ["src/tests/**/*.ts", "src/utils/runCalculationsTest.ts"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "warn"
+    }
+  },
+  {
     ignores: [
       "node_modules/**",
       ".next/**",
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "coverage/**",
     ],
   },
 ];
