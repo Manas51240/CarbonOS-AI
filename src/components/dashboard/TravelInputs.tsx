@@ -32,34 +32,37 @@ export default function TravelInputs({
       <div>
         <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-6">Configure Journey</h2>
         
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-3 gap-3 mb-6" role="group" aria-label="Travel mode">
           <button
             onClick={() => onTypeChange('car')}
+            aria-pressed={travelType === 'car'}
             className={`py-3 rounded-2xl border text-xs font-bold transition-all duration-300 flex flex-col items-center gap-1.5 cursor-pointer ${
               travelType === 'car' ? 'border-primary bg-primary/10 text-primary' : 'border-muted bg-secondary/25 text-muted-foreground'
             }`}
           >
-            <Car className="w-4 h-4" />
+            <Car aria-hidden="true" className="w-4 h-4" />
             <span>Road Commute</span>
           </button>
           
           <button
             onClick={() => onTypeChange('flight')}
+            aria-pressed={travelType === 'flight'}
             className={`py-3 rounded-2xl border text-xs font-bold transition-all duration-300 flex flex-col items-center gap-1.5 cursor-pointer ${
               travelType === 'flight' ? 'border-primary bg-primary/10 text-primary' : 'border-muted bg-secondary/25 text-muted-foreground'
             }`}
           >
-            <PlaneTakeoff className="w-4 h-4" />
+            <PlaneTakeoff aria-hidden="true" className="w-4 h-4" />
             <span>Air Travel</span>
           </button>
 
           <button
             onClick={() => onTypeChange('transit')}
+            aria-pressed={travelType === 'transit'}
             className={`py-3 rounded-2xl border text-xs font-bold transition-all duration-300 flex flex-col items-center gap-1.5 cursor-pointer ${
               travelType === 'transit' ? 'border-primary bg-primary/10 text-primary' : 'border-muted bg-secondary/25 text-muted-foreground'
             }`}
           >
-            <Bus className="w-4 h-4" />
+            <Bus aria-hidden="true" className="w-4 h-4" />
             <span>Public Transit</span>
           </button>
         </div>
