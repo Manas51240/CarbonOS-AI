@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, KeyboardEvent } from 'react';
 import { useCarbonStore } from '@/hooks/useCarbonStore';
 import { useAuth } from '@/hooks/useAuth';
 import { Trophy, Target } from 'lucide-react';
@@ -18,6 +18,20 @@ export default function CommunityPage() {
   const { challenges, leaderboard, joinChallenge, completeChallengeProgress } = useCarbonStore();
   const [activeTab, setActiveTab] = useState<'leaderboard' | 'challenges'>('leaderboard');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const tabs: Array<'leaderboard' | 'challenges'> = ['leaderboard', 'challenges'];
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+
+  const handleTabKeyDown = (e: KeyboardEvent<HTMLButtonElement>, idx: number) => {
+    let nextIdx = idx;
+    if (e.key === 'ArrowRight') nextIdx = (idx + 1) % tabs.length;
+    else if (e.key === 'ArrowLeft') nextIdx = (idx - 1 + tabs.length) % tabs.length;
+    else if (e.key === 'Home') nextIdx = 0;
+    else if (e.key === 'End') nextIdx = tabs.length - 1;
+    else return;
+    e.preventDefault();
+    setActiveTab(tabs[nextIdx]);
+    tabRefs.current[nextIdx]?.focus();
+  };
 
   const handleProgressIncrement = async (challengeId: string) => {
     setUpdatingId(challengeId);
@@ -49,31 +63,37 @@ export default function CommunityPage() {
         <button
           id="tab-leaderboard"
           role="tab"
+          ref={el => { tabRefs.current[0] = el; }}
           aria-selected={activeTab === 'leaderboard'}
           aria-controls="panel-leaderboard"
+          tabIndex={activeTab === 'leaderboard' ? 0 : -1}
           onClick={() => setActiveTab('leaderboard')}
+          onKeyDown={(e) => handleTabKeyDown(e, 0)}
           className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none ${
             activeTab === 'leaderboard'
               ? 'bg-primary text-primary-foreground shadow-sm'
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
-          <Trophy className="w-4 h-4" />
+          <Trophy aria-hidden="true" className="w-4 h-4" />
           <span>Global Leaderboard</span>
         </button>
         <button
           id="tab-challenges"
           role="tab"
+          ref={el => { tabRefs.current[1] = el; }}
           aria-selected={activeTab === 'challenges'}
           aria-controls="panel-challenges"
+          tabIndex={activeTab === 'challenges' ? 0 : -1}
           onClick={() => setActiveTab('challenges')}
+          onKeyDown={(e) => handleTabKeyDown(e, 1)}
           className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none ${
             activeTab === 'challenges'
               ? 'bg-primary text-primary-foreground shadow-sm'
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
-          <Target className="w-4 h-4" />
+          <Target aria-hidden="true" className="w-4 h-4" />
           <span>Green Challenges</span>
         </button>
       </div>

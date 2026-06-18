@@ -38,8 +38,22 @@ const VisionRequestSchema = z.object({
   })
 });
 
+/** Validates the request comes from our own app origin to prevent API quota abuse */
+function isAuthorizedRequest(req: NextRequest): boolean {
+  const origin = req.headers.get('origin') || '';
+  const referer = req.headers.get('referer') || '';
+  const appOrigin = process.env.NEXT_PUBLIC_APP_URL || 'https://carbonos-ai-160715832584.us-central1.run.app';
+  const allowed = [appOrigin, 'http://localhost:3000', 'http://localhost:3001'];
+  return !origin || allowed.some(o => origin.startsWith(o) || referer.startsWith(o));
+}
+
 export async function POST(req: NextRequest) {
   try {
+    // Authorization guard — block cross-origin API abuse
+    if (!isAuthorizedRequest(req)) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const formData = await req.formData();
     const image = formData.get('image');
 
