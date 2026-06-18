@@ -13,7 +13,7 @@ export class EmissionAnalyticsService {
   static async logEvent(
     uid: string,
     eventType: AnalyticsEvent['eventType'],
-    details: Record<string, any>
+    details: Record<string, unknown>
   ): Promise<void> {
     // Validate details with strict Zod whitelisting
     let validatedDetails = details;

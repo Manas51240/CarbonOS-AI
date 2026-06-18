@@ -11,7 +11,7 @@ export interface AnalyticsEvent {
   timestamp: string;
   uid: string;
   eventType: 'footprint_logged' | 'twin_simulation' | 'challenge_completed' | 'reward_redeemed' | 'coach_query';
-  details: Record<string, any>;
+  details: Record<string, unknown>;
 }
 
 export const AnalyticsService = {
@@ -21,7 +21,7 @@ export const AnalyticsService = {
   async logEvent(
     uid: string,
     eventType: AnalyticsEvent['eventType'],
-    details: Record<string, any>
+    details: Record<string, unknown>
   ): Promise<void> {
     // Validate details with strict Zod whitelisting
     let validatedDetails = details;

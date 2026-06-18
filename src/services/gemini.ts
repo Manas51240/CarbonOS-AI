@@ -26,7 +26,7 @@ export interface ScannedReceiptResult {
 }
 
 const isTesting = typeof process !== 'undefined' && process.env.NODE_ENV === 'test';
-const shouldCallApi = isTesting ? !!(global as any).__mockGeminiApi : true;
+const shouldCallApi = isTesting ? !!(globalThis as typeof globalThis & { __mockGeminiApi?: boolean }).__mockGeminiApi : true;
 
 /**
  * Sends chat message to AI Coach

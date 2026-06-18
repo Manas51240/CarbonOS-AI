@@ -15,18 +15,25 @@ const GeminiCoachResponseSchema = z.object({
   )
 });
 
-interface ChatHistoryItem {
-  role: string;
-  content: string;
-}
+const CoachRequestSchema = z.object({
+  history: z.array(
+    z.object({
+      role: z.string(),
+      content: z.string()
+    })
+  ).optional().default([]),
+  newMessage: z.string(),
+  userContext: z.string().optional().default('')
+});
 
 export async function POST(req: NextRequest) {
   try {
-    const { history, newMessage, userContext } = await req.json() as {
-      history: ChatHistoryItem[];
-      newMessage: string;
-      userContext: string;
-    };
+    const body = await req.json();
+    const parsedRequest = CoachRequestSchema.safeParse(body);
+    if (!parsedRequest.success) {
+      return NextResponse.json({ error: 'Invalid request payload', details: parsedRequest.error.issues }, { status: 400 });
+    }
+    const { history, newMessage, userContext } = parsedRequest.data;
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
@@ -38,7 +45,7 @@ export async function POST(req: NextRequest) {
         role: 'user',
         parts: [{ text: userContext || '' }]
       },
-      ...(history || []).map((msg: ChatHistoryItem) => ({
+      ...(history || []).map((msg: { role: string; content: string }) => ({
         role: msg.role === 'model' ? 'model' : 'user',
         parts: [{ text: msg.content || '' }]
       })),

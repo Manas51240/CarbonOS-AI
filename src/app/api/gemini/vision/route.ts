@@ -32,13 +32,25 @@ const ScannedReceiptSchema = z.object({
   sustainabilityInsight: z.string()
 });
 
+const VisionRequestSchema = z.object({
+  image: z.custom<File>((val) => typeof File !== 'undefined' && val instanceof File, {
+    message: "Image must be a valid File object"
+  })
+});
+
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-    const imageFile = formData.get('image') as File | null;
+    const image = formData.get('image');
+
+    const parsedRequest = VisionRequestSchema.safeParse({ image });
+    if (!parsedRequest.success) {
+      return NextResponse.json({ error: 'Invalid request payload', details: parsedRequest.error.issues }, { status: 400 });
+    }
+    const imageFile = parsedRequest.data.image;
 
     const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey || !imageFile) {
+    if (!apiKey) {
       return NextResponse.json({ useFallback: true });
     }
 

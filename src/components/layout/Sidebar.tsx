@@ -85,7 +85,7 @@ export default function Sidebar() {
                   : 'text-muted-foreground hover:text-foreground hover:bg-secondary/40'
               }`}
             >
-              <Icon className={`w-5 h-5 transition-transform duration-300 group-hover:scale-110 ${
+              <Icon aria-hidden="true" className={`w-5 h-5 transition-transform duration-300 group-hover:scale-110 ${
                 isActive ? 'text-primary-foreground' : link.highlight ? 'text-accent' : 'text-muted-foreground'
               }`} />
               
@@ -113,12 +113,12 @@ export default function Sidebar() {
         >
           {theme === 'dark' ? (
             <>
-              <Sun className="w-5 h-5 text-amber-500" />
+              <Sun aria-hidden="true" className="w-5 h-5 text-amber-500" />
               <span>Light Mode</span>
             </>
           ) : (
             <>
-              <Moon className="w-5 h-5 text-indigo-500" />
+              <Moon aria-hidden="true" className="w-5 h-5 text-indigo-500" />
               <span>Dark Mode</span>
             </>
           )}
@@ -128,7 +128,7 @@ export default function Sidebar() {
           onClick={logout}
           className="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-destructive hover:text-destructive hover:bg-destructive/10 transition-all duration-300 w-full text-left"
         >
-          <LogOut className="w-5 h-5" />
+          <LogOut aria-hidden="true" className="w-5 h-5" />
           <span>Logout</span>
         </button>
       </div>

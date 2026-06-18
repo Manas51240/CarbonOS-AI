@@ -20,7 +20,7 @@ export default function ParadigmBanner() {
       
       <div className="flex items-center gap-2.5">
         <div className="p-2 rounded-xl bg-primary/10 text-primary flex items-center justify-center border shadow-sm">
-          <Info className="w-4 h-4" />
+          <Info aria-hidden="true" className="w-4 h-4" />
         </div>
         <div>
           <h3 className="font-extrabold text-xs text-foreground uppercase tracking-wider">Carbon Reduction Lifecycle</h3>
@@ -34,11 +34,11 @@ export default function ParadigmBanner() {
           return (
             <div key={step.label} className="flex items-center gap-1.5 md:gap-3">
               <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold ${step.color} shadow-sm`}>
-                <Icon className="w-3.5 h-3.5" />
+                <Icon aria-hidden="true" className="w-3.5 h-3.5" />
                 <span>{step.label}</span>
               </div>
               {idx < steps.length - 1 && (
-                <ArrowRight className="w-3.5 h-3.5 text-muted-foreground/60" />
+                <ArrowRight aria-hidden="true" className="w-3.5 h-3.5 text-muted-foreground/60" />
               )}
             </div>
           );

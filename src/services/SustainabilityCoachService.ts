@@ -105,7 +105,7 @@ export class SustainabilityCoachService {
   ): Promise<string> {
     const sanitizedMsg = sanitizeInput(newMessage);
     const isTesting = typeof process !== 'undefined' && process.env.NODE_ENV === 'test';
-    const shouldCallApi = isTesting ? !!(global as any).__mockGeminiApi : true;
+    const shouldCallApi = isTesting ? !!(globalThis as typeof globalThis & { __mockGeminiApi?: boolean }).__mockGeminiApi : true;
     const twinContext = `User's current profile: Diet is ${user.carbonTwin.diet}, vehicle type is ${user.carbonTwin.transportMode}, daily commute is ${user.carbonTwin.commuteDistance} miles, home energy is ${user.carbonTwin.homeEnergy}.`;
 
     if (shouldCallApi) {
