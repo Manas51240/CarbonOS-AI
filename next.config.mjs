@@ -36,6 +36,15 @@ const nextConfig = {
           { key: 'Cache-Control', value: 'private, no-cache, no-store, must-revalidate' },
         ],
       },
+      {
+        // Prevent browser caching of HTML pages (auth routes) so stale JS bundles are never served
+        source: '/auth/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+          { key: 'Pragma', value: 'no-cache' },
+          { key: 'Expires', value: '0' },
+        ],
+      },
     ];
   },
 };
