@@ -84,7 +84,7 @@ export default function MarketplacePage() {
           <button
             key={cat}
             onClick={() => setActiveCategory(cat)}
-            className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer border ${
+            className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
               activeCategory === cat
                 ? 'bg-primary border-primary text-primary-foreground shadow-sm'
                 : 'bg-secondary/40 border-muted hover:bg-secondary text-muted-foreground'
@@ -140,7 +140,7 @@ export default function MarketplacePage() {
                   <button
                     onClick={() => handleRedeem(reward.id)}
                     disabled={!canAfford || redeemingId === reward.id}
-                    className={`px-4 py-2.5 rounded-xl font-bold text-xs transition-all duration-300 flex items-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:pointer-events-none ${
+                    className={`px-4 py-2.5 rounded-xl font-bold text-xs transition-all duration-300 flex items-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                       canAfford
                         ? 'bg-primary text-primary-foreground hover:shadow-md hover:shadow-primary/20'
                         : 'bg-secondary text-muted-foreground border border-muted'

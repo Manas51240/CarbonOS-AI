@@ -50,6 +50,9 @@ export class UserProfileService {
     if (typeof window !== 'undefined') {
       localStorage.setItem(USER_SESSION_KEY, profile.uid);
     }
+    if (typeof document !== 'undefined') {
+      document.cookie = `carbonos_user_session=${profile.uid}; path=/; max-age=31536000; SameSite=Lax`;
+    }
     return profile;
   }
 
@@ -80,6 +83,9 @@ export class UserProfileService {
       localStorage.setItem(USER_PROFILE_KEY, JSON.stringify(profile));
       localStorage.setItem(USER_SESSION_KEY, profile.uid);
     }
+    if (typeof document !== 'undefined') {
+      document.cookie = `carbonos_user_session=${profile.uid}; path=/; max-age=31536000; SameSite=Lax`;
+    }
     return profile;
   }
 
@@ -89,6 +95,9 @@ export class UserProfileService {
   static async signOut(): Promise<void> {
     if (typeof window !== 'undefined') {
       localStorage.removeItem(USER_SESSION_KEY);
+    }
+    if (typeof document !== 'undefined') {
+      document.cookie = 'carbonos_user_session=; path=/; max-age=0; SameSite=Lax';
     }
   }
 

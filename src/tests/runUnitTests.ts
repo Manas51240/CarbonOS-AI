@@ -6,13 +6,13 @@
 // Mock window and localStorage for Node.js E2E-style service testing
 if (typeof global.window === 'undefined') {
   const mockStorage: Record<string, string> = {};
-  (global as any).window = {};
-  (global as any).localStorage = {
+  global.window = {} as unknown as Window & typeof globalThis;
+  global.localStorage = {
     getItem: (key: string) => mockStorage[key] || null,
     setItem: (key: string, value: string) => { mockStorage[key] = String(value); },
     removeItem: (key: string) => { delete mockStorage[key]; },
     clear: () => { Object.keys(mockStorage).forEach(k => delete mockStorage[k]); }
-  };
+  } as unknown as Storage;
 }
 
 import { CarbonCalculationService } from '../services/CarbonCalculationService';
@@ -210,34 +210,30 @@ async function executeTests() {
     assert(defaultText.includes('As your Personalized Carbon Reduction Coach'), 'Responds to default query');
 
     // Test API route success path by mocking fetch and setting API key env var
-    (global as any).__mockGeminiApi = true;
-    const originalFetch = (global as any).fetch;
-    (global as any).fetch = async (url: string) => {
+    global.__mockGeminiApi = true;
+    const originalFetch = global.fetch;
+    global.fetch = async (input: RequestInfo | URL) => {
+      const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
       if (url === '/api/gemini/coach') {
-        return {
-          ok: true,
-          json: async () => ({ reply: 'Gemini Coach Response' })
-        } as any;
+        return new Response(JSON.stringify({ reply: 'Gemini Coach Response' }), { status: 200 });
       }
-      return { ok: false } as any;
+      return new Response(null, { status: 400 });
     };
 
     const apiCoachText = await SustainabilityCoachService.getCoachResponse([], 'API test', updatedProfile);
     assert(apiCoachText === 'Gemini Coach Response', 'Fetches reply from Gemini API if key is present');
 
     // Test API route failure path fallback
-    (global as any).fetch = async () => {
+    global.fetch = async () => {
       throw new Error('API request failed');
     };
     const apiFailCoachText = await SustainabilityCoachService.getCoachResponse([], 'API fail test', updatedProfile);
     assert(apiFailCoachText.includes('As your Personalized Carbon Reduction Coach'), 'Falls back on API error');
 
     // Clean up mocks
-    delete (global as any).__mockGeminiApi;
+    global.__mockGeminiApi = undefined;
     if (originalFetch) {
-      (global as any).fetch = originalFetch;
-    } else {
-      delete (global as any).fetch;
+      global.fetch = originalFetch;
     }
 
     // ----------------------------------------

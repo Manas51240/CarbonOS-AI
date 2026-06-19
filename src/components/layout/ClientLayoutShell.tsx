@@ -13,19 +13,25 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Leaf } from 'lucide-react';
 
-function ShellContent({ children }: { children: React.ReactNode }) {
+interface ShellContentProps {
+  children: React.ReactNode;
+  isAuthenticated: boolean;
+}
+
+function ShellContent({ children, isAuthenticated }: ShellContentProps) {
   const { user, loading } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
 
   const isAuthPage = pathname.startsWith('/auth');
 
-  // Automatic client side redirection for guest users
+  // Handle orphaned sessions (cookie exists but profile is missing/deleted, or storage cleared)
   useEffect(() => {
     if (!loading && !user && !isAuthPage) {
+      if (typeof document !== 'undefined') {
+        document.cookie = 'carbonos_user_session=; path=/; max-age=0; SameSite=Lax';
+      }
       router.replace('/auth/login');
-    } else if (!loading && user && isAuthPage) {
-      router.replace('/');
     }
   }, [user, loading, isAuthPage, router]);
 
@@ -34,7 +40,9 @@ function ShellContent({ children }: { children: React.ReactNode }) {
     return <div className="min-h-screen bg-background">{children}</div>;
   }
 
-  if (loading) {
+  // Render skeleton loaders ONLY if we are loading AND don't have an active session cookie.
+  // If we have a cookie, we bypass the full-page block so SSR/FCP paints the shell immediately.
+  if (loading && !isAuthenticated) {
     return (
       <div className="min-h-screen bg-background flex">
         {/* Skeleton Sidebar Drawer */}
@@ -60,11 +68,6 @@ function ShellContent({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // Not logged in guest redirection fallback
-  if (!user) {
-    return <div className="min-h-screen bg-background">{children}</div>;
-  }
-
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar Drawer */}
@@ -84,11 +87,16 @@ function ShellContent({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function ClientLayoutShell({ children }: { children: React.ReactNode }) {
+interface ClientLayoutShellProps {
+  children: React.ReactNode;
+  isAuthenticated: boolean;
+}
+
+export default function ClientLayoutShell({ children, isAuthenticated }: ClientLayoutShellProps) {
   return (
     <AuthProvider>
       <CarbonStoreProvider>
-        <ShellContent>{children}</ShellContent>
+        <ShellContent isAuthenticated={isAuthenticated}>{children}</ShellContent>
       </CarbonStoreProvider>
     </AuthProvider>
   );

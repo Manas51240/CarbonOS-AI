@@ -10,8 +10,10 @@ import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { LoginSchema } from '@/validators';
 import { Leaf, Mail, User, Sparkles, Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
+  const router = useRouter();
   const { login, signup } = useAuth();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
@@ -41,9 +43,9 @@ export default function LoginPage() {
       } else {
         await login(email);
       }
+      router.replace('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Authentication failed');
-    } finally {
       setLoadingState(false);
     }
   };

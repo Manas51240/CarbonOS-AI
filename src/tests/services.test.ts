@@ -9,7 +9,7 @@ import { FootprintLog } from '../types';
 
 beforeAll(() => {
   const mockStorage: Record<string, string> = {};
-  global.window = {} as any;
+  global.window = {} as unknown as Window & typeof globalThis;
   global.localStorage = {
     getItem: (key: string) => mockStorage[key] || null,
     setItem: (key: string, value: string) => { mockStorage[key] = String(value); },
@@ -17,7 +17,7 @@ beforeAll(() => {
     clear: () => { Object.keys(mockStorage).forEach(k => delete mockStorage[k]); },
     length: 0,
     key: () => null,
-  };
+  } as unknown as Storage;
 });
 
 describe('CarbonCalculationService', () => {
@@ -159,28 +159,26 @@ describe('SustainabilityCoachService', () => {
     expect(updatedProfile).not.toBeNull();
     if (!updatedProfile) return;
 
-    (global as any).__mockGeminiApi = true;
+    global.__mockGeminiApi = true;
     const mockFetch = vi.fn().mockImplementation(async (url: string) => {
       if (url === '/api/gemini/coach') {
-        return {
-          ok: true,
-          json: async () => ({ reply: 'Gemini Coach Response' })
-        };
+        return new Response(JSON.stringify({ reply: 'Gemini Coach Response' }), { status: 200 });
       }
-      return { ok: false };
+      return new Response(null, { status: 400 });
     });
-    global.fetch = mockFetch as any;
+    vi.stubGlobal('fetch', mockFetch);
 
     const apiCoachText = await SustainabilityCoachService.getCoachResponse([], 'API test', updatedProfile);
     expect(apiCoachText).toBe('Gemini Coach Response');
 
     // Error case
-    global.fetch = vi.fn().mockRejectedValue(new Error('API request failed'));
+    const mockFailFetch = vi.fn().mockRejectedValue(new Error('API request failed'));
+    vi.stubGlobal('fetch', mockFailFetch);
     const apiFailCoachText = await SustainabilityCoachService.getCoachResponse([], 'API fail test', updatedProfile);
     expect(apiFailCoachText).toContain('As your Personalized Carbon Reduction Coach');
 
-    delete (global as any).__mockGeminiApi;
-    delete (global as any).fetch;
+    global.__mockGeminiApi = undefined;
+    vi.unstubAllGlobals();
   });
 });
 

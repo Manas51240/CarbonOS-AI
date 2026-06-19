@@ -6,12 +6,12 @@
 // Mock global localStorage for Node.js E2E-style service testing
 if (typeof global.window === 'undefined') {
   const mockStorage: Record<string, string> = {};
-  (global as any).window = {};
-  (global as any).localStorage = {
+  global.window = {} as unknown as Window & typeof globalThis;
+  global.localStorage = {
     getItem: (key: string) => mockStorage[key] || null,
     setItem: (key: string, value: string) => { mockStorage[key] = String(value); },
     removeItem: (key: string) => { delete mockStorage[key]; }
-  };
+  } as unknown as Storage;
 }
 
 import {
@@ -25,7 +25,7 @@ import {
 
 import { FirebaseService } from '../services/firebase';
 
-function assertEqual(actual: any, expected: any, tolerance = 0.01, testName: string) {
+function assertEqual(actual: unknown, expected: unknown, tolerance = 0.01, testName: string) {
   if (typeof actual === 'number' && typeof expected === 'number') {
     const diff = Math.abs(actual - expected);
     if (diff <= tolerance) {

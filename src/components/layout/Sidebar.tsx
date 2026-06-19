@@ -47,7 +47,7 @@ export default function Sidebar() {
     }
   };
 
-  if (!user) return null;
+  // Removed null-check to allow static shell to render during client-side hydration
 
   const links = [
     { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -80,7 +80,7 @@ export default function Sidebar() {
               key={link.href}
               href={link.href}
               aria-current={isActive ? 'page' : undefined}
-              className={`flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 relative group overflow-hidden ${
+              className={`flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 relative group overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                 isActive
                   ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20 scale-[1.02]'
                   : 'text-muted-foreground hover:text-foreground hover:bg-secondary/40'
@@ -110,7 +110,7 @@ export default function Sidebar() {
       <div className="mt-auto pt-4 border-t border-muted flex flex-col gap-2">
         <button
           onClick={toggleTheme}
-          className="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/40 transition-all duration-300 w-full text-left"
+          className="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/40 transition-all duration-300 w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         >
           {theme === 'dark' ? (
             <>
@@ -125,13 +125,15 @@ export default function Sidebar() {
           )}
         </button>
 
-        <button
-          onClick={logout}
-          className="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-destructive hover:text-destructive hover:bg-destructive/10 transition-all duration-300 w-full text-left"
-        >
-          <LogOut aria-hidden="true" className="w-5 h-5" />
-          <span>Logout</span>
-        </button>
+        {user && (
+          <button
+            onClick={logout}
+            className="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-destructive hover:text-destructive hover:bg-destructive/10 transition-all duration-300 w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-2"
+          >
+            <LogOut aria-hidden="true" className="w-5 h-5" />
+            <span>Logout</span>
+          </button>
+        )}
       </div>
     </aside>
   );

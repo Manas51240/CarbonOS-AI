@@ -196,6 +196,9 @@ export const FirebaseService = {
         setLocalStorageItem(LOCAL_STORAGE_KEYS.USER_PROFILE, profile);
       }
       setLocalStorageItem(LOCAL_STORAGE_KEYS.USER_SESSION, profile.uid);
+      if (typeof document !== 'undefined') {
+        document.cookie = `carbonos_user_session=${profile.uid}; path=/; max-age=31536000; SameSite=Lax`;
+      }
       return profile;
     },
 
@@ -217,6 +220,9 @@ export const FirebaseService = {
       };
       setLocalStorageItem(LOCAL_STORAGE_KEYS.USER_PROFILE, profile);
       setLocalStorageItem(LOCAL_STORAGE_KEYS.USER_SESSION, profile.uid);
+      if (typeof document !== 'undefined') {
+        document.cookie = `carbonos_user_session=${profile.uid}; path=/; max-age=31536000; SameSite=Lax`;
+      }
       return profile;
     },
 
@@ -224,13 +230,16 @@ export const FirebaseService = {
       if (typeof window !== 'undefined') {
         localStorage.removeItem(LOCAL_STORAGE_KEYS.USER_SESSION);
       }
+      if (typeof document !== 'undefined') {
+        document.cookie = 'carbonos_user_session=; path=/; max-age=0; SameSite=Lax';
+      }
     },
 
     onAuthStateChanged(callback: (user: UserProfile | null) => void): () => void {
       if (typeof window === 'undefined') return () => {};
       
       const checkAuth = () => {
-        const uid = localStorage.getItem(LOCAL_STORAGE_KEYS.USER_SESSION);
+        const uid = getLocalStorageItem<string | null>(LOCAL_STORAGE_KEYS.USER_SESSION, null);
         if (uid) {
           const profile = getLocalStorageItem<UserProfile | null>(LOCAL_STORAGE_KEYS.USER_PROFILE, null);
           callback(profile);
