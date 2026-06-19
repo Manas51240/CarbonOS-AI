@@ -32,7 +32,7 @@ export const isFirebaseConfigured = (): boolean => {
 
 export const FirebaseService = {
   auth: {
-    async getCurrentUser(): Promise<UserProfile | null> {
+    getCurrentUser(): UserProfile | null {
       return getLocalStorageItem<UserProfile | null>(LOCAL_STORAGE_KEYS.USER_PROFILE, null);
     },
     async signIn(email: string): Promise<UserProfile> {

@@ -68,11 +68,53 @@ export function EmissionsTrendChart({ logs }: { logs: LogData[] }) {
           )}
 
           {points.map((p, idx) => {
-            const isHovered = activePointIdx === idx;
+            const isActive = activePointIdx === idx;
+            const label = `${p.isForecast ? 'AI Project Forecast' : 'Emissions Log'} for ${p.date}: ${p.val.toFixed(1)} kg CO2e`;
+            
             return (
               <g key={idx}>
-                <circle cx={p.x} cy={p.y} r="15" fill="transparent" className="cursor-pointer" onMouseEnter={() => setActivePointIdx(idx)} onMouseLeave={() => setActivePointIdx(null)} />
-                <circle cx={p.x} cy={p.y} r={isHovered ? '7' : '4'} fill={p.isForecast ? '#10B981' : '#0F9D58'} stroke="var(--color-background)" strokeWidth="2" className="transition-all duration-150 pointer-events-none" />
+                {isActive && (
+                  <circle
+                    cx={p.x}
+                    cy={p.y}
+                    r="10"
+                    fill="none"
+                    stroke="#0F9D58"
+                    strokeWidth="1.5"
+                    strokeDasharray="2 2"
+                    className="animate-[spin_4s_linear_infinite]"
+                    style={{ transformOrigin: `${p.x}px ${p.y}px` }}
+                  />
+                )}
+                <circle
+                  cx={p.x}
+                  cy={p.y}
+                  r="15"
+                  fill="transparent"
+                  className="cursor-pointer focus-visible:outline-none"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={label}
+                  onMouseEnter={() => setActivePointIdx(idx)}
+                  onMouseLeave={() => setActivePointIdx(null)}
+                  onFocus={() => setActivePointIdx(idx)}
+                  onBlur={() => setActivePointIdx(null)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setActivePointIdx(isActive ? null : idx);
+                    }
+                  }}
+                />
+                <circle
+                  cx={p.x}
+                  cy={p.y}
+                  r={isActive ? '7' : '4'}
+                  fill={p.isForecast ? '#10B981' : '#0F9D58'}
+                  stroke="var(--color-background)"
+                  strokeWidth="2"
+                  className="transition-all duration-150 pointer-events-none"
+                />
               </g>
             );
           })}

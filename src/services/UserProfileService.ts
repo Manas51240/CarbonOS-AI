@@ -11,7 +11,7 @@ export class UserProfileService {
   /**
    * Fetches active user session.
    */
-  static async getCurrentUser(): Promise<UserProfile | null> {
+  static getCurrentUser(): UserProfile | null {
     if (typeof window === 'undefined') return null;
     const item = localStorage.getItem(USER_PROFILE_KEY);
     return item ? JSON.parse(item) : null;

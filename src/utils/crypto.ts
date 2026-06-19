@@ -1,8 +1,9 @@
 import CryptoJS from 'crypto-js';
 
 function getEncryptionKey(): string {
-  return 'carbonos_secure_aes_key_2026_@#$!_prod_salting';
+  return process.env.NEXT_PUBLIC_ENCRYPTION_KEY || 'carbonos_fallback_secure_key';
 }
+
 
 export function encrypt(text: string): string {
   if (!text) return '';

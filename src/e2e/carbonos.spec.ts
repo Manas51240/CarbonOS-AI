@@ -2,16 +2,14 @@ import { test, expect } from '@playwright/test';
 
 test.describe('CarbonOS AI - End-to-End User Journeys', () => {
   
-  test.beforeEach(async ({ page }) => {
-    // Navigate to local port and seed fresh LocalStorage profile
-    await page.goto('/');
-    await page.evaluate(() => {
-      localStorage.clear();
-    });
+  test.beforeEach(async ({ context }) => {
+    // Clear session cookies before each test to ensure no auth state bleed
+    await context.clearCookies();
   });
 
   test('1. Onboarding & Login Flow', async ({ page }) => {
     await page.goto('/auth/login');
+    await page.waitForURL('**/auth/login');
     
     // Check brand header is visible
     await expect(page.locator('h1').first()).toContainText('CarbonOS');
