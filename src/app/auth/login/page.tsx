@@ -73,8 +73,10 @@ export default function LoginPage() {
         </div>
 
         {/* Tab Selector */}
-        <div className="flex bg-secondary/60 rounded-xl p-1 mb-6 border border-muted/50">
+        <div role="tablist" aria-label="Authentication Options" className="flex bg-secondary/60 rounded-xl p-1 mb-6 border border-muted/50">
           <button
+            role="tab"
+            aria-selected={!isSignUp}
             onClick={() => { setIsSignUp(false); setError(''); }}
             className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none ${
               !isSignUp ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground'
@@ -83,6 +85,8 @@ export default function LoginPage() {
             Log In
           </button>
           <button
+            role="tab"
+            aria-selected={isSignUp}
             onClick={() => { setIsSignUp(true); setError(''); }}
             className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none ${
               isSignUp ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground'

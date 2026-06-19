@@ -1,10 +1,7 @@
 import CryptoJS from 'crypto-js';
 
 function getEncryptionKey(): string {
-  if (typeof window !== 'undefined' && window.location && window.location.host) {
-    return 'carbonos_' + window.location.host;
-  }
-  return 'carbonos_secure_key_2026';
+  return 'carbonos_secure_aes_key_2026_@#$!_prod_salting';
 }
 
 export function encrypt(text: string): string {
