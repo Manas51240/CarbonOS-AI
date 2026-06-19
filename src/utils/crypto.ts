@@ -17,7 +17,7 @@ export function encrypt(text: string): string {
   try {
     return CryptoJS.AES.encrypt(text, getEncryptionKey()).toString();
   } catch (e) {
-    console.error('Encryption failed:', e);
+    console.error('[CarbonOS] Encryption error:', e);
     return '';
   }
 }
@@ -27,9 +27,8 @@ export function decrypt(cipherText: string): string {
   try {
     const bytes = CryptoJS.AES.decrypt(cipherText, getEncryptionKey());
     return bytes.toString(CryptoJS.enc.Utf8);
-  } catch {
+  } catch (e) {
+    console.error('[CarbonOS] Decryption error:', e);
     return '';
   }
 }
-
-
