@@ -50,6 +50,18 @@ export default function LoginPage() {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, targetIsSignUp: boolean) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      setIsSignUp(targetIsSignUp);
+      setError('');
+      setTimeout(() => {
+        const otherButton = document.getElementById(targetIsSignUp ? 'tab-signup' : 'tab-login');
+        otherButton?.focus();
+      }, 0);
+    }
+  };
+
   return (
     <div className="w-screen h-screen flex items-center justify-center bg-background text-foreground relative overflow-hidden p-4">
       {/* Premium ambient glows */}
@@ -75,9 +87,13 @@ export default function LoginPage() {
         {/* Tab Selector */}
         <div role="tablist" aria-label="Authentication Options" className="flex bg-secondary/60 rounded-xl p-1 mb-6 border border-muted/50">
           <button
+            id="tab-login"
             role="tab"
             aria-selected={!isSignUp}
+            aria-controls="panel-auth"
+            tabIndex={!isSignUp ? 0 : -1}
             onClick={() => { setIsSignUp(false); setError(''); }}
+            onKeyDown={(e) => handleKeyDown(e, true)}
             className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none ${
               !isSignUp ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground'
             }`}
@@ -85,9 +101,13 @@ export default function LoginPage() {
             Log In
           </button>
           <button
+            id="tab-signup"
             role="tab"
             aria-selected={isSignUp}
+            aria-controls="panel-auth"
+            tabIndex={isSignUp ? 0 : -1}
             onClick={() => { setIsSignUp(true); setError(''); }}
+            onKeyDown={(e) => handleKeyDown(e, false)}
             className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none ${
               isSignUp ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground'
             }`}
@@ -97,7 +117,7 @@ export default function LoginPage() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form id="panel-auth" role="tabpanel" aria-labelledby={!isSignUp ? 'tab-login' : 'tab-signup'} onSubmit={handleSubmit} className="flex flex-col gap-4">
           {isSignUp && (
             <div className="flex flex-col gap-1.5">
               <label htmlFor="name-input" className="text-xs font-bold text-muted-foreground">Name</label>
