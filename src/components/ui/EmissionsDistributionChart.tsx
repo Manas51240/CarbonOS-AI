@@ -49,10 +49,21 @@ export function EmissionsDistributionChart({ data }: { data: DistributionData })
                 strokeWidth={hoveredIdx === idx ? strokeWidth + 4 : strokeWidth}
                 strokeDasharray={strokeDasharray}
                 strokeDashoffset={strokeDashoffset}
-                className="transition-all duration-300 ease-out cursor-pointer stroke-current"
+                className="transition-all duration-300 ease-out cursor-pointer stroke-current outline-none focus-visible:stroke-accent focus-visible:stroke-[30]"
                 style={{ stroke: cat.color }}
+                tabIndex={0}
+                role="button"
+                aria-label={`${cat.name}: ${cat.value.toFixed(1)} kg CO₂e, ${((cat.value / total) * 100).toFixed(0)}%`}
                 onMouseEnter={() => setHoveredIdx(idx)}
                 onMouseLeave={() => setHoveredIdx(null)}
+                onFocus={() => setHoveredIdx(idx)}
+                onBlur={() => setHoveredIdx(null)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setHoveredIdx(idx);
+                  }
+                }}
               />
             );
           })}
@@ -82,11 +93,22 @@ export function EmissionsDistributionChart({ data }: { data: DistributionData })
           return (
             <div
               key={cat.name}
-              className={`flex items-center justify-between gap-4 p-2 rounded-xl transition-all duration-200 cursor-pointer ${
+              className={`flex items-center justify-between gap-4 p-2 rounded-xl transition-all duration-200 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                 hoveredIdx === idx ? 'bg-secondary/70 translate-x-1' : 'hover:bg-secondary/35'
               }`}
+              tabIndex={0}
+              role="button"
+              aria-label={`${cat.name}: ${percent.toFixed(0)}%, ${val.toFixed(1)} kg`}
               onMouseEnter={() => setHoveredIdx(idx)}
               onMouseLeave={() => setHoveredIdx(null)}
+              onFocus={() => setHoveredIdx(idx)}
+              onBlur={() => setHoveredIdx(null)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setHoveredIdx(idx);
+                }
+              }}
             >
               <div className="flex items-center gap-2">
                 <span className="w-3.5 h-3.5 rounded-md" style={{ backgroundColor: cat.color }} />

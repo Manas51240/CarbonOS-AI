@@ -54,7 +54,7 @@ export default function MarketplacePage() {
         
         {/* Points display card */}
         <div className="flex items-center gap-3 bg-primary/10 border border-primary/25 rounded-2xl px-5 py-3 shadow-sm select-none">
-          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-background font-black">
+          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-background font-black" role="img" aria-label="Points Coin">
             🪙
           </div>
           <div>
@@ -110,7 +110,7 @@ export default function MarketplacePage() {
             >
               {/* Image / Icon Holder */}
               <div>
-                <div className="w-14 h-14 rounded-2xl bg-secondary/80 flex items-center justify-center text-3xl mb-4 border shadow-sm">
+                <div className="w-14 h-14 rounded-2xl bg-secondary/80 flex items-center justify-center text-3xl mb-4 border shadow-sm" role="img" aria-label="Reward Item">
                   {reward.image}
                 </div>
                 

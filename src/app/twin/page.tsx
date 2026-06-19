@@ -7,7 +7,6 @@ import { useForecast } from '@/hooks/useForecast';
 import { useEmissionTracking } from '@/hooks/useEmissionTracking';
 
 import { CarbonCalculationService } from '@/services/CarbonCalculationService';
-import { UserProfileService } from '@/services/UserProfileService';
 
 import ParadigmBanner from '@/components/shared/ParadigmBanner';
 import TwinAvatar from '@/components/carbon-twin/TwinAvatar';
@@ -19,8 +18,8 @@ import { CarbonTwinState } from '@/types';
  * Real-time lifestyle simulator page.
  */
 export default function CarbonTwinPage() {
-  const { user, refreshProfile } = useAuth();
-  const { twinSimState, updateTwinSim } = useCarbonTwin();
+  const { user } = useAuth();
+  const { twinSimState, commitTwinSettings } = useCarbonTwin();
   const { getProjectedSavings } = useForecast();
   const { logs } = useEmissionTracking();
 
@@ -76,16 +75,8 @@ export default function CarbonTwinPage() {
     setSaveSuccess(false);
 
     try {
-      updateTwinSim({
-        dietType: diet,
-        dailyCommuteMiles: commuteDist,
-        carFuel: transportMode,
-        homeEnergySource: energySource,
-        digitalUsageLevel: digitalLevel
-      });
-
-      // Update backend user profile configuration
-      await UserProfileService.updateCarbonTwin({
+      // Delegate settings commit side-effects entirely to custom hook
+      await commitTwinSettings({
         diet,
         transportMode,
         commuteDistance: commuteDist,
@@ -93,7 +84,6 @@ export default function CarbonTwinPage() {
         digitalUsage: digitalLevel
       });
 
-      await refreshProfile();
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (e) {

@@ -7,15 +7,12 @@
  */
 
 import { useState } from 'react';
-import { useCarbonStore } from '@/hooks/useCarbonStore';
-import { useAuth } from '@/hooks/useAuth';
-import { UserProfileService } from '@/services/UserProfileService';
+import { useSustainabilityInsights } from '@/hooks/useSustainabilityInsights';
 import { Bell, AlertTriangle, Thermometer, Wind, Zap, Check, Sparkles } from 'lucide-react';
 import ParadigmBanner from '@/components/shared/ParadigmBanner';
 
 export default function AlertsPage() {
-  const { refreshProfile } = useAuth();
-  const { alerts } = useCarbonStore();
+  const { alerts, rewardAlertAction } = useSustainabilityInsights();
   const [completedAlertIds, setCompletedAlertIds] = useState<string[]>([]);
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
@@ -25,11 +22,10 @@ export default function AlertsPage() {
       // Simulate API response
       await new Promise(resolve => setTimeout(resolve, 800));
       
-      // Reward user with 50 points via centralized UserProfileService
-      await UserProfileService.rewardUser(50, 4.5);
+      // Delegate rewarding transaction to custom hook
+      await rewardAlertAction();
 
       setCompletedAlertIds(prev => [...prev, alertId]);
-      await refreshProfile();
     } finally {
       setLoadingId(null);
     }

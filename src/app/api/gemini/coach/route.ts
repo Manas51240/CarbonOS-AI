@@ -35,16 +35,21 @@ function sanitizeInput(input: string): string {
 
 function isAuthorizedRequest(req: NextRequest): boolean {
   const origin = req.headers.get('origin') || '';
-  if (!origin) {
+  const host = req.headers.get('host') || '';
+  const referer = req.headers.get('referer') || '';
+  const proto = req.headers.get('x-forwarded-proto') || 'https';
+  const appOrigin = process.env.NEXT_PUBLIC_APP_URL || (host ? `${proto}://${host}` : '');
+  
+  // Fallback: If origin is omitted (some safe browsers/clients on same-origin), use referer origin
+  const resolvedOrigin = origin || (referer ? new URL(referer).origin : '');
+  if (!resolvedOrigin) {
     return false;
   }
-  const host = req.headers.get('host') || '';
-  const appOrigin = process.env.NEXT_PUBLIC_APP_URL || 'https://carbonos-ai-160715832584.us-central1.run.app';
   
-  // Check if origin matches host target OR matches allowed origins
-  const isMatchHost = host && (origin === `http://${host}` || origin === `https://${host}`);
+  // Check if resolved origin matches host target OR matches allowed origins
+  const isMatchHost = host && (resolvedOrigin === `http://${host}` || resolvedOrigin === `https://${host}`);
   const allowed = [appOrigin, 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'];
-  const isAllowed = allowed.some(o => origin.startsWith(o));
+  const isAllowed = allowed.some(o => resolvedOrigin.startsWith(o));
   
   return isMatchHost || isAllowed;
 }
