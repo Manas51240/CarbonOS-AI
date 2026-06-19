@@ -55,6 +55,7 @@ export default function SimulatorParams({
             onClick={onReset}
             className="p-2 text-muted-foreground hover:text-foreground rounded-lg bg-secondary/50 hover:bg-secondary border transition-all duration-200 cursor-pointer"
             title="Reset simulation parameters"
+            aria-label="Reset simulation parameters"
           >
             <RefreshCw className="w-3.5 h-3.5" />
           </button>

@@ -71,3 +71,17 @@ export const AnalyticsDetailsSchemaMap = {
   coach_query: CoachQueryDetailsSchema,
 };
 
+export const VisionRequestSchema = z.object({
+  image: z.custom<File>((val) => typeof File !== 'undefined' && val instanceof File, {
+    message: "Image must be a valid File object"
+  })
+  .refine((file) => file.size <= 5 * 1024 * 1024, {
+    message: "Image size must not exceed 5MB"
+  })
+  .refine(
+    (file) => ['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type),
+    { message: "Only JPEG, PNG, WEBP, and GIF images are allowed" }
+  )
+});
+
+

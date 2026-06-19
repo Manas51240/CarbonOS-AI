@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { isAuthorizedRequest } from '@/utils/authGuard';
+import { VisionRequestSchema } from '@/validators';
 
 const GeminiVisionEnvelopeSchema = z.object({
   candidates: z.array(
@@ -31,33 +33,6 @@ const ScannedReceiptSchema = z.object({
   totalCarbonKg: z.number(),
   sustainabilityInsight: z.string()
 });
-
-const VisionRequestSchema = z.object({
-  image: z.custom<File>((val) => typeof File !== 'undefined' && val instanceof File, {
-    message: "Image must be a valid File object"
-  })
-});
-
-function isAuthorizedRequest(req: NextRequest): boolean {
-  const origin = req.headers.get('origin') || '';
-  const host = req.headers.get('host') || '';
-  const referer = req.headers.get('referer') || '';
-  const proto = req.headers.get('x-forwarded-proto') || 'https';
-  const appOrigin = process.env.NEXT_PUBLIC_APP_URL || (host ? `${proto}://${host}` : '');
-  
-  // Fallback: If origin is omitted (some safe browsers/clients on same-origin), use referer origin
-  const resolvedOrigin = origin || (referer ? new URL(referer).origin : '');
-  if (!resolvedOrigin) {
-    return false;
-  }
-  
-  // Check if resolved origin matches host target OR matches allowed origins
-  const isMatchHost = host && (resolvedOrigin === `http://${host}` || resolvedOrigin === `https://${host}`);
-  const allowed = [appOrigin, 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'];
-  const isAllowed = allowed.some(o => resolvedOrigin.startsWith(o));
-  
-  return isMatchHost || isAllowed;
-}
 
 export async function POST(req: NextRequest) {
   try {

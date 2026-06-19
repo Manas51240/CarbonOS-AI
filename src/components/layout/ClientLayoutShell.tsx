@@ -1,6 +1,6 @@
 'use client';
 
-import '@/utils/crypto';
+
 
 /**
  * CarbonOS AI - Layout Shell
@@ -15,6 +15,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Leaf } from 'lucide-react';
 import { UserProfileService } from '@/services/UserProfileService';
+import { decrypt, encrypt } from '@/utils/crypto';
 
 interface ShellContentProps {
   children: React.ReactNode;
@@ -27,6 +28,53 @@ function ShellContent({ children, isAuthenticated }: ShellContentProps) {
   const router = useRouter();
 
   const isAuthPage = pathname.startsWith('/auth');
+
+  // Handle Storage prototype interception client-side only during hydration/mount
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !(window as unknown as { __carbonosStorageOverridden?: boolean }).__carbonosStorageOverridden) {
+      (window as unknown as { __carbonosStorageOverridden: boolean }).__carbonosStorageOverridden = true;
+
+      const originalGetItem = Storage.prototype.getItem;
+      const originalSetItem = Storage.prototype.setItem;
+
+      Storage.prototype.getItem = function (key: string) {
+        const value = originalGetItem.call(this, key);
+        if (!value) return null;
+
+        if (key.startsWith('carbonos_')) {
+          const trimmed = value.trim();
+          if (
+            (trimmed.startsWith('{') && trimmed.endsWith('}')) ||
+            (trimmed.startsWith('[') && trimmed.endsWith(']')) ||
+            (trimmed.startsWith('"') && trimmed.endsWith('"'))
+          ) {
+            return value;
+          }
+          try {
+            return decrypt(value) || value;
+          } catch {
+            return value;
+          }
+        }
+        return value;
+      };
+
+      Storage.prototype.setItem = function (key: string, value: string) {
+        if (key.startsWith('carbonos_')) {
+          const trimmed = value.trim();
+          const isPlaintext = (trimmed.startsWith('{') && trimmed.endsWith('}')) ||
+                              (trimmed.startsWith('[') && trimmed.endsWith(']')) ||
+                              (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+                              (!trimmed.includes('"') && trimmed.length < 20);
+          if (isPlaintext) {
+            originalSetItem.call(this, key, encrypt(value));
+            return;
+          }
+        }
+        originalSetItem.call(this, key, value);
+      };
+    }
+  }, []);
 
   // Handle orphaned sessions (cookie exists but profile is missing/deleted, or storage cleared)
   useEffect(() => {
@@ -41,30 +89,15 @@ function ShellContent({ children, isAuthenticated }: ShellContentProps) {
     return <div className="min-h-screen bg-background">{children}</div>;
   }
 
-  // Render skeleton loaders ONLY if we are loading AND don't have an active session cookie.
-  // If we have a cookie, we bypass the full-page block so SSR/FCP paints the shell immediately.
+  // Render full-page centered loader ONLY if we are loading AND don't have an active session cookie.
+  // This avoids displaying skeleton sidebar elements prior to authorization checks and redirects.
   if (loading && !isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background flex">
-        {/* Skeleton Sidebar Drawer */}
-        <aside className="w-80 h-screen fixed left-0 top-0 glass-panel border-r flex flex-col p-6 z-40">
-          <div className="flex-1 flex flex-col gap-4 animate-pulse">
-            <div className="h-8 bg-muted rounded-xl w-2/3" />
-            <div className="h-20 bg-muted rounded-2xl w-full" />
-            <div className="h-8 bg-muted rounded-xl w-5/6 mt-6" />
-            <div className="h-8 bg-muted rounded-xl w-3/4" />
-            <div className="h-8 bg-muted rounded-xl w-2/3" />
-            <div className="h-8 bg-muted rounded-xl w-4/5" />
-          </div>
-        </aside>
-        
-        {/* Main Panel Skeleton */}
-        <main className="pl-80 flex-1 min-h-screen bg-background overflow-x-hidden relative p-8">
-          <div className="max-w-6xl mx-auto w-full min-h-full flex flex-col items-center justify-center py-20">
-            <Leaf className="w-8 h-8 text-primary animate-spin" />
-            <p className="text-xs text-muted-foreground mt-4">Syncing environmental intelligence...</p>
-          </div>
-        </main>
+      <div className="min-h-screen bg-background flex items-center justify-center p-8">
+        <div className="flex flex-col items-center justify-center text-center">
+          <Leaf className="w-8 h-8 text-primary animate-spin" />
+          <p className="text-xs text-muted-foreground mt-4">Syncing environmental intelligence...</p>
+        </div>
       </div>
     );
   }
