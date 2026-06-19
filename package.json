@@ -13,6 +13,8 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@types/crypto-js": "^4.2.2",
+    "crypto-js": "^4.2.0",
     "isomorphic-dompurify": "^3.17.0",
     "lucide-react": "^1.18.0",
     "next": "15.5.19",

@@ -1,9 +1,4 @@
-/**
- * Lightweight synchronous cryptographic utility for local storage serialization.
- * Prevents local client modifications or plaintext leaks of user profile details,
- * rewards balances, or daily carbon calculations.
- * Supports multi-byte Unicode strings (like Emojis) using TextEncoder & TextDecoder.
- */
+import CryptoJS from 'crypto-js';
 
 function getEncryptionKey(): string {
   if (typeof window !== 'undefined' && window.location && window.location.host) {
@@ -14,60 +9,19 @@ function getEncryptionKey(): string {
 
 export function encrypt(text: string): string {
   if (!text) return '';
-  
-  // Convert string to UTF-8 bytes
-  const encoder = new TextEncoder();
-  const bytes = encoder.encode(text);
-  
-  const keyEncoder = new TextEncoder();
-  const keyBytes = keyEncoder.encode(getEncryptionKey());
-  
-  // Apply XOR cipher on UTF-8 bytes
-  const resultBytes = new Uint8Array(bytes.length);
-  for (let i = 0; i < bytes.length; i++) {
-    resultBytes[i] = bytes[i] ^ keyBytes[i % keyBytes.length];
+  try {
+    return CryptoJS.AES.encrypt(text, getEncryptionKey()).toString();
+  } catch (e) {
+    console.error('Encryption failed:', e);
+    return '';
   }
-  
-  // Convert UTF-8 bytes to binary string (character codes 0-255)
-  let binaryString = '';
-  for (let i = 0; i < resultBytes.length; i++) {
-    binaryString += String.fromCharCode(resultBytes[i]);
-  }
-  
-  if (typeof btoa !== 'undefined') {
-    return btoa(binaryString);
-  }
-  return Buffer.from(resultBytes).toString('base64');
 }
 
 export function decrypt(cipherText: string): string {
   if (!cipherText) return '';
   try {
-    let binaryString = '';
-    if (typeof atob !== 'undefined') {
-      binaryString = atob(cipherText);
-    } else {
-      binaryString = Buffer.from(cipherText, 'base64').toString('binary');
-    }
-    
-    // Convert binary string back to byte array
-    const bytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
-    }
-    
-    const keyEncoder = new TextEncoder();
-    const keyBytes = keyEncoder.encode(getEncryptionKey());
-    
-    // Apply XOR cipher to revert
-    const resultBytes = new Uint8Array(bytes.length);
-    for (let i = 0; i < bytes.length; i++) {
-      resultBytes[i] = bytes[i] ^ keyBytes[i % keyBytes.length];
-    }
-    
-    // Decode UTF-8 bytes back to Unicode string
-    const decoder = new TextDecoder();
-    return decoder.decode(resultBytes);
+    const bytes = CryptoJS.AES.decrypt(cipherText, getEncryptionKey());
+    return bytes.toString(CryptoJS.enc.Utf8);
   } catch {
     return '';
   }

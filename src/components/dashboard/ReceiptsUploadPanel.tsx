@@ -29,11 +29,13 @@ export default function ReceiptsUploadPanel({
               aria-label="Upload receipt image or PDF file"
               className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
             />
-            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
-              <Upload className="w-6 h-6" />
-            </div>
-            <span className="text-xs font-bold text-foreground">Drag & drop receipt here</span>
-            <span className="text-[10px] text-muted-foreground mt-1">Accepts PNG, JPG, or PDF (Max 5MB)</span>
+            <label htmlFor="receipt-file-input" className="flex flex-col items-center justify-center cursor-pointer">
+              <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+                <Upload className="w-6 h-6" />
+              </div>
+              <span className="text-xs font-bold text-foreground">Drag & drop receipt here</span>
+              <span className="text-[10px] text-muted-foreground mt-1">Accepts PNG, JPG, or PDF (Max 5MB)</span>
+            </label>
           </div>
 
           {selectedFile && (
