@@ -6,8 +6,8 @@ const nextConfig = {
   async headers() {
     const cspHeader = `
       default-src 'self';
-      script-src 'self' 'unsafe-inline' 'nonce-carbonos-secure-script-token' https://*.run.app https://*.googleapis.com;
-      style-src 'self' 'unsafe-inline' 'nonce-carbonos-secure-style-token' https://fonts.googleapis.com;
+      script-src 'self' 'unsafe-inline' https://*.run.app https://*.googleapis.com;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
       style-src-attr 'self' 'unsafe-inline';
       img-src 'self' blob: data: https://*.run.app https://*.googleapis.com;
       font-src 'self' https://fonts.gstatic.com;
