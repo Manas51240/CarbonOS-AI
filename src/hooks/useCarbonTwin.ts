@@ -9,7 +9,7 @@ interface CommitTwinParams {
   transportMode: 'electric' | 'hybrid' | 'gasoline' | 'diesel';
   commuteDistance: number;
   homeEnergy: '100-solar' | 'partial-solar' | 'grid-mix';
-  digitalUsage: 'low' | 'medium' | 'high';
+  digitalUsage: 'low' | 'average' | 'high';
 }
 
 /**
