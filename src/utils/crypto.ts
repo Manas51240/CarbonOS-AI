@@ -1,7 +1,14 @@
 import CryptoJS from 'crypto-js';
 
 function getEncryptionKey(): string {
-  return process.env.NEXT_PUBLIC_ENCRYPTION_KEY || 'carbonos_fallback_secure_key';
+  const key = process.env.NEXT_PUBLIC_ENCRYPTION_KEY;
+  if (!key) {
+    throw new Error(
+      '[CarbonOS] NEXT_PUBLIC_ENCRYPTION_KEY is not set. ' +
+      'Set this environment variable before running the application.'
+    );
+  }
+  return key;
 }
 
 
