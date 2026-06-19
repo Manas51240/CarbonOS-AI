@@ -5,7 +5,12 @@
  * Supports multi-byte Unicode strings (like Emojis) using TextEncoder & TextDecoder.
  */
 
-const ENCRYPTION_KEY = 'carbonos_secure_key_2026';
+function getEncryptionKey(): string {
+  if (typeof window !== 'undefined' && window.location && window.location.host) {
+    return 'carbonos_' + window.location.host;
+  }
+  return 'carbonos_secure_key_2026';
+}
 
 export function encrypt(text: string): string {
   if (!text) return '';
@@ -15,7 +20,7 @@ export function encrypt(text: string): string {
   const bytes = encoder.encode(text);
   
   const keyEncoder = new TextEncoder();
-  const keyBytes = keyEncoder.encode(ENCRYPTION_KEY);
+  const keyBytes = keyEncoder.encode(getEncryptionKey());
   
   // Apply XOR cipher on UTF-8 bytes
   const resultBytes = new Uint8Array(bytes.length);
@@ -52,7 +57,7 @@ export function decrypt(cipherText: string): string {
     }
     
     const keyEncoder = new TextEncoder();
-    const keyBytes = keyEncoder.encode(ENCRYPTION_KEY);
+    const keyBytes = keyEncoder.encode(getEncryptionKey());
     
     // Apply XOR cipher to revert
     const resultBytes = new Uint8Array(bytes.length);

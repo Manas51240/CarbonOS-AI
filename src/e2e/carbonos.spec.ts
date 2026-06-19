@@ -39,7 +39,7 @@ test.describe('CarbonOS AI - End-to-End User Journeys', () => {
     await expect(page.locator('h1').last()).toContainText('AI Carbon Twin');
     
     // Simulate changing commute slider
-    const slider = page.locator('input[type="range"]');
+    const slider = page.locator('input[type="range"]').first();
     await slider.focus();
     await slider.fill('45'); // set commute distance to 45 miles
     

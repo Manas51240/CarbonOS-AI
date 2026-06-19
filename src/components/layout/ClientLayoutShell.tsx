@@ -1,5 +1,7 @@
 'use client';
 
+import '@/utils/crypto';
+
 /**
  * CarbonOS AI - Layout Shell
  * Wraps page contexts with providers and injects the glassmorphic Sidebar

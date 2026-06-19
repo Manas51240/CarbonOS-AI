@@ -88,7 +88,7 @@ export default function QuickLogForm({ onLogSubmit }: QuickLogFormProps) {
           <button
             type="submit"
             disabled={isLogging}
-            className="w-full py-3 mt-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs shadow-md hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-75 disabled:pointer-events-none"
+            className="w-full py-3 mt-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs shadow-md hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-75 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
             <Plus className="w-4 h-4" />
             <span>Log Activity Today</span>

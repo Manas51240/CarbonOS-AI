@@ -37,14 +37,20 @@ function sanitizeInput(input: string): string {
     .slice(0, 2000);                   // cap length to prevent token abuse
 }
 
-/** Validates the request comes from our own app origin to prevent API quota abuse */
 function isAuthorizedRequest(req: NextRequest): boolean {
   const origin = req.headers.get('origin') || '';
-  const referer = req.headers.get('referer') || '';
+  if (!origin) {
+    return false;
+  }
+  const host = req.headers.get('host') || '';
   const appOrigin = process.env.NEXT_PUBLIC_APP_URL || 'https://carbonos-ai-160715832584.us-central1.run.app';
-  // Allow same-origin requests (production URL, localhost dev, or internal server calls)
-  const allowed = [appOrigin, 'http://localhost:3000', 'http://localhost:3001'];
-  return !origin || allowed.some(o => origin.startsWith(o) || referer.startsWith(o));
+  
+  // Check if origin matches host target OR matches allowed origins
+  const isMatchHost = host && (origin === `http://${host}` || origin === `https://${host}`);
+  const allowed = [appOrigin, 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'];
+  const isAllowed = allowed.some(o => origin.startsWith(o));
+  
+  return isMatchHost || isAllowed;
 }
 
 export async function POST(req: NextRequest) {

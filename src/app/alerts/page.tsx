@@ -132,7 +132,7 @@ export default function AlertsPage() {
                         <button
                           onClick={() => handlePerformAction(alert.id)}
                           disabled={isLoading}
-                          className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-[10px] font-bold uppercase tracking-wider hover:shadow-md cursor-pointer transition-all duration-300 disabled:opacity-50"
+                          className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-[10px] font-bold uppercase tracking-wider hover:shadow-md cursor-pointer transition-all duration-300 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                         >
                           {isLoading ? 'Checking...' : 'I Did This'}
                         </button>
