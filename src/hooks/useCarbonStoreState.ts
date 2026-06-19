@@ -1,51 +1,10 @@
-'use client';
-
-/**
- * CarbonOS AI - Sustainability & Carbon State Management Store
- * Coordinates carbon calculation engine, Firebase DB logs, and simulations.
- */
-
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { FirebaseService } from '@/services/firebase';
-import { FootprintLog, Challenge, Reward, LeaderboardEntry } from '@/types';
-import { AnalyticsService } from '@/services/analytics';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from './useAuth';
+import { FootprintLog, Challenge, Reward, LeaderboardEntry } from '@/types';
+import { FirebaseService } from '@/services/firebase';
+import { AnalyticsService } from '@/services/analytics';
+import { CarbonStoreContextType, SustainabilityAlert } from '@/context/CarbonStoreContext';
 
-export interface SustainabilityAlert {
-  id: string;
-  type: 'danger' | 'warning' | 'info' | 'success';
-  title: string;
-  message: string;
-  actionRequired?: string;
-  date: string;
-}
-
-interface CarbonStoreContextType {
-  logs: FootprintLog[];
-  challenges: Challenge[];
-  rewards: Reward[];
-  purchasedRewards: string[];
-  leaderboard: LeaderboardEntry[];
-  alerts: SustainabilityAlert[];
-  twinSimState: {
-    dietType: 'vegan' | 'vegetarian' | 'flexitarian' | 'meat-heavy';
-    carFuel: 'gasoline' | 'diesel' | 'hybrid' | 'electric';
-    dailyCommuteMiles: number;
-    homeEnergySource: 'grid-mix' | 'partial-solar' | '100-solar';
-    digitalUsageLevel: 'low' | 'average' | 'high';
-  };
-  loading: boolean;
-  addLog: (log: Omit<FootprintLog, 'id'>) => Promise<void>;
-  updateTwinSim: (updates: Partial<CarbonStoreContextType['twinSimState']>) => void;
-  joinChallenge: (challengeId: string) => Promise<void>;
-  completeChallengeProgress: (challengeId: string, progress: number) => Promise<void>;
-  redeemStoreReward: (rewardId: string) => Promise<{ success: boolean; message: string }>;
-  refreshData: () => Promise<void>;
-}
-
-const CarbonStoreContext = createContext<CarbonStoreContextType | undefined>(undefined);
-
-// Static environment/sustainability alerts (simulating localized push alerts)
 const DEFAULT_ALERTS: SustainabilityAlert[] = [
   {
     id: 'a1',
@@ -73,7 +32,7 @@ const DEFAULT_ALERTS: SustainabilityAlert[] = [
   }
 ];
 
-export function CarbonStoreProvider({ children }: { children: React.ReactNode }) {
+export function useCarbonStoreState(): CarbonStoreContextType {
   const { user, refreshProfile } = useAuth();
   const [logs, setLogs] = useState<FootprintLog[]>([]);
   const [challenges, setChallenges] = useState<Challenge[]>([]);
@@ -143,16 +102,13 @@ export function CarbonStoreProvider({ children }: { children: React.ReactNode })
     try {
       const newLog = await FirebaseService.db.addFootprintLog(logInput);
       
-      // Update local state reactively
       setLogs(prev => [...prev.filter(l => l.date !== logInput.date), newLog].sort(
         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
       ));
 
-      // Refresh profile (points & score update)
       await refreshProfile();
       await AnalyticsService.logEvent(user.uid, 'footprint_logged', { date: logInput.date, totalCo2: logInput.total });
       
-      // Update leaderboard ranking reactively
       const updatedLeaderboard = await FirebaseService.db.getLeaderboard();
       setLeaderboard(updatedLeaderboard);
     } catch (e) {
@@ -163,8 +119,6 @@ export function CarbonStoreProvider({ children }: { children: React.ReactNode })
   const updateTwinSim = (updates: Partial<CarbonStoreContextType['twinSimState']>) => {
     setTwinSimState(prev => {
       const next = { ...prev, ...updates };
-      
-      // Log event in BigQuery simulator
       if (user) {
         AnalyticsService.logEvent(user.uid, 'twin_simulation', next);
       }
@@ -225,34 +179,20 @@ export function CarbonStoreProvider({ children }: { children: React.ReactNode })
     await loadData();
   };
 
-  return (
-    <CarbonStoreContext.Provider
-      value={{
-        logs,
-        challenges,
-        rewards,
-        purchasedRewards,
-        leaderboard,
-        alerts,
-        twinSimState,
-        loading,
-        addLog,
-        updateTwinSim,
-        joinChallenge,
-        completeChallengeProgress,
-        redeemStoreReward,
-        refreshData,
-      }}
-    >
-      {children}
-    </CarbonStoreContext.Provider>
-  );
-}
-
-export function useCarbonStore() {
-  const context = useContext(CarbonStoreContext);
-  if (context === undefined) {
-    throw new Error('useCarbonStore must be used within a CarbonStoreProvider');
-  }
-  return context;
+  return {
+    logs,
+    challenges,
+    rewards,
+    purchasedRewards,
+    leaderboard,
+    alerts,
+    twinSimState,
+    loading,
+    addLog,
+    updateTwinSim,
+    joinChallenge,
+    completeChallengeProgress,
+    redeemStoreReward,
+    refreshData,
+  };
 }
