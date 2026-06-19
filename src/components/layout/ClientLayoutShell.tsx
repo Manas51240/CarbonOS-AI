@@ -14,6 +14,7 @@ import Sidebar from '@/components/layout/Sidebar';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Leaf } from 'lucide-react';
+import { UserProfileService } from '@/services/UserProfileService';
 
 interface ShellContentProps {
   children: React.ReactNode;
@@ -30,9 +31,7 @@ function ShellContent({ children, isAuthenticated }: ShellContentProps) {
   // Handle orphaned sessions (cookie exists but profile is missing/deleted, or storage cleared)
   useEffect(() => {
     if (!loading && !user && !isAuthPage) {
-      if (typeof document !== 'undefined') {
-        document.cookie = 'carbonos_user_session=; path=/; max-age=0; SameSite=Lax';
-      }
+      UserProfileService.clearSessionCookie();
       router.replace('/auth/login');
     }
   }, [user, loading, isAuthPage, router]);

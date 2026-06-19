@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import DOMPurify from 'isomorphic-dompurify';
 
 const GeminiCoachResponseSchema = z.object({
   candidates: z.array(
@@ -26,15 +27,10 @@ const CoachRequestSchema = z.object({
   userContext: z.string().optional().default('')
 });
 
-/** Server-side input sanitizer: strips HTML tags and script injection patterns */
+/** Server-side input sanitizer using DOMPurify */
 function sanitizeInput(input: string): string {
-  return input
-    .replace(/<[^>]*>/g, '')           // strip HTML tags
-    .replace(/javascript:/gi, '')       // strip JS URI protocol
-    .replace(/on\w+\s*=/gi, '')        // strip inline event handlers
-    .replace(/[<>]/g, '')              // strip remaining angle brackets
-    .trim()
-    .slice(0, 2000);                   // cap length to prevent token abuse
+  if (!input) return '';
+  return DOMPurify.sanitize(input).trim().slice(0, 2000);
 }
 
 function isAuthorizedRequest(req: NextRequest): boolean {

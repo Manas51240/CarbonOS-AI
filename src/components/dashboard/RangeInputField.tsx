@@ -40,6 +40,7 @@ export default function RangeInputField({
         step={step}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        aria-valuetext={`${value} ${unit}`}
         className="w-full h-2 rounded-lg bg-secondary/80 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none cursor-pointer mt-3"
       />
     </div>

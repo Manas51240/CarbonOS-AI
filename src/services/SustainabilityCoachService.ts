@@ -1,4 +1,5 @@
 import { UserProfile, ChatMessage } from '@/types';
+import DOMPurify from 'isomorphic-dompurify';
 
 export interface ActionPlanStep {
   title: string;
@@ -8,19 +9,11 @@ export interface ActionPlanStep {
 }
 
 /**
- * Helper utility to sanitize dynamic user inputs to protect against XSS injections.
+ * Helper utility to sanitize dynamic user inputs using industry-standard DOMPurify.
  */
 export function sanitizeInput(text: string): string {
-  return text.replace(/[&<>"']/g, (m) => {
-    const map: Record<string, string> = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#x27;'
-    };
-    return map[m] || m;
-  });
+  if (!text) return '';
+  return DOMPurify.sanitize(text).trim().slice(0, 2000);
 }
 
 

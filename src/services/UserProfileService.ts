@@ -102,6 +102,15 @@ export class UserProfileService {
   }
 
   /**
+   * Helper to clear session cookie for routing redirection.
+   */
+  static clearSessionCookie(): void {
+    if (typeof document !== 'undefined') {
+      document.cookie = 'carbonos_user_session=; path=/; max-age=0; SameSite=Lax';
+    }
+  }
+
+  /**
    * Updates user carbon twin settings with strict Zod validation.
    */
   static async updateCarbonTwin(
